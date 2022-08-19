@@ -1,0 +1,48 @@
+package kr.happyjob.study.system.model;
+
+public class NoticeModel {
+	
+	public int getAnn_no() {
+		return ann_no;
+	}
+	public void setAnn_no(int ann_no) {
+		this.ann_no = ann_no;
+	}
+	public String getLoginID() {
+		return loginID;
+	}
+	public void setLoginID(String loginID) {
+		this.loginID = loginID;
+	}
+	public String getAnn_title() {
+		return ann_title;
+	}
+	public void setAnn_title(String ann_title) {
+		this.ann_title = ann_title;
+	}
+	public String getAnn_con() {
+		return ann_con;
+	}
+	public void setAnn_con(String ann_con) {
+		this.ann_con = ann_con;
+	}
+	public int getAnn_cnt() {
+		return ann_cnt;
+	}
+	public void setAnn_cnt(int ann_cnt) {
+		this.ann_cnt = ann_cnt;
+	}
+	public String getAnn_date() {
+		return ann_date;
+	}
+	public void setAnn_date(String ann_date) {
+		this.ann_date = ann_date;
+	}
+	private int ann_no;
+	private String loginID;
+	private String ann_title;
+	private String ann_con;
+	private int ann_cnt;
+	private String ann_date;
+	
+}

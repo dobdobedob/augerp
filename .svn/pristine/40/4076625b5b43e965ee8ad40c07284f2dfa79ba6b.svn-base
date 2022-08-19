@@ -1,0 +1,18 @@
+package kr.happyjob.study.system.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.happyjob.study.system.model.ComnCodUtilModel;
+import kr.happyjob.study.system.model.ComnDtlCodModel;
+import kr.happyjob.study.system.model.ComnGrpCodModel;
+import kr.happyjob.study.system.model.NoticeModel;
+
+public interface NoticeDao {
+
+	public List<NoticeModel> listNoticeModel(Map<String, Object> paramMap) throws Exception;
+
+	public int totNoticeModel(Map<String, Object> paramMap) throws Exception;
+	
+	public NoticeModel selectnotice(Map<String, Object> paramMap) throws Exception;
+}
