@@ -212,7 +212,7 @@
 		SELECT  tb.group_code as GRP_COD
 				,	tb.detail_code as DTL_COD
 				,	tb.detail_name as DTL_COD_NM
-		FROM	tb_group_code ta
+		FROM	 tb_group_code ta
   				,	tb_detail_code tb
 		WHERE	ta.group_code = tb.group_code
 			AND	ta.use_yn = 'Y'

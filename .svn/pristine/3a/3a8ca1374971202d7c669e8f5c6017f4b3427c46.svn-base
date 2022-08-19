@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happyjob.study.taskCalendar.dao.TaskCalendarDao">
+<select id = "TaskCalendarList" resultType="kr.happyjob.study.taskCalendar.model.TaskCalendarModel">
+		SELECT ll.vac_rdate, ll.vac_stat, COUNT(*) AS vac_cnt
+			FROM (
+				  SELECT vr.vac_stat, DATE_FORMAT(vr.vac_rdate, '%Y-%m-%d') AS vac_rdate, ui.name, ui.dept_cd, vr.vac_type
+						FROM tb_vacation_request vr 
+							LEFT JOIN tb_userinfo ui ON ui.loginID = vr.loginID 
+							
+						WHERE DATE_FORMAT(vr.vac_rdate, '%Y-%m-%d') BETWEEN #{startDate} AND #{endDate}
+        		  ) ll
+  		GROUP BY ll.vac_rdate, ll.vac_stat;
+	</select>
+	
+	<select id = "TaskCalendarDetailList" resultType="kr.happyjob.study.taskCalendar.model.TaskCalendarModel">
+		
+	  SELECT vr.vac_stat, DATE_FORMAT(vr.vac_rdate, '%Y-%m-%d') AS vac_rdate, dp.dept_name, ui.name, vr.vac_type
+	  	FROM tb_vacation_request vr 
+	  		 INNER JOIN tb_userinfo ui ON ui.loginID = vr.loginID 
+	  		 LEFT JOIN tb_dept dp ON dp.dept_cd = ui.dept_cd
+           	 
+	</select>
+</mapper>
