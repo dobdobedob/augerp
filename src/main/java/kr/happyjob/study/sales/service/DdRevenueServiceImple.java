@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import kr.happyjob.study.sales.dao.DdRevenueDao;
 import kr.happyjob.study.sales.model.DdRevenueModel;
+import kr.happyjob.study.sales.model.DdRevenueModelChart;
 
 @Service
 public class DdRevenueServiceImple implements DdRevenueService {
@@ -37,4 +38,19 @@ public class DdRevenueServiceImple implements DdRevenueService {
 		return totDdRevenueModel;
 		
 	};	
+	
+	public List<DdRevenueModel> listCopItemOrder(Map<String, Object> paramMap) throws Exception {
+		
+		List<DdRevenueModel> listCopItemOrder = ddRevenueeDao.listcopItemOrder(paramMap);
+		
+		return listCopItemOrder;
+	};
+	
+	
+	public List<DdRevenueModelChart> listCopItemOrderchart(Map<String, Object> paramMap) throws Exception {
+		
+		List<DdRevenueModelChart> listCopItemOrder = ddRevenueeDao.listCopItemOrderchart(paramMap);
+		
+		return listCopItemOrder;
+	};
 }

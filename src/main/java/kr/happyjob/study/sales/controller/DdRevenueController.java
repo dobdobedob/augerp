@@ -1,5 +1,7 @@
 package kr.happyjob.study.sales.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,9 +16,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.happyjob.study.sales.service.DdRevenueService;
+import kr.happyjob.study.system.model.ComnCodUtilModel;
+import kr.happyjob.study.system.model.comcombo;
+import kr.happyjob.study.system.service.ComnComboService;
+import kr.happyjob.study.common.comnUtils.ComnCodUtil;
 import kr.happyjob.study.sales.model.DdRevenueModel;
+import kr.happyjob.study.sales.model.DdRevenueModelChart;
 
 @Controller
 @RequestMapping("/sales/")
@@ -24,6 +32,9 @@ public class DdRevenueController {
 
 	@Autowired
 	DdRevenueService ddRevenueService;
+	
+	@Autowired
+	ComnComboService comnComboService;
 	
 	// Set logger
 	private final Logger logger = LogManager.getLogger(this.getClass());
@@ -55,7 +66,7 @@ public class DdRevenueController {
 		return "sales/ddRevenue";
 	}
 	
-	// bmSalePlanList 불러오기
+	// ddRevenueList 불러오기
 	@RequestMapping("listDdRevenueModel.do")
 	public String listDdRevenue(Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) throws Exception {
@@ -72,13 +83,26 @@ public class DdRevenueController {
 		paramMap.put("pageIndex", pageIndex);
 		paramMap.put("pageSize", pageSize);
 		
-		
 		List<DdRevenueModel> listDdRevenueModel = ddRevenueService.listDdRevenueModel(paramMap);
+		List<DdRevenueModel> listCopItemOrder = ddRevenueService.listCopItemOrder(paramMap);
 		
-		int totBmSalePlanModel = ddRevenueService.totDdRevenueModel(paramMap);
+		//List<ComnCodUtilModel> db = ComnCodUtil.getComnCod("DBCD");
+	
+	    // 상품 대분류
+        //List<comcombo> comComboModel = comnComboService.selectlargelist(paramMap);
+		
+        //String ldiv = "";
+        
+        
+        
+        
+		int totDdRevenueModel = ddRevenueService.totDdRevenueModel(paramMap);
 		
 		model.addAttribute("listDdRevenueModel", listDdRevenueModel);
-		model.addAttribute("totBmSalePlanModel", totBmSalePlanModel);
+		model.addAttribute("totDdRevenueModel", totDdRevenueModel);
+		model.addAttribute("listCopItemOrder", listCopItemOrder);
+		//model.addAttribute("comComboModel", comComboModel);
+		
 		
 		model.addAttribute("curpage", curpage);
 		model.addAttribute("pageSize", pageSize);		
@@ -92,5 +116,25 @@ public class DdRevenueController {
 		return "sales/ddRevenueList";
 	}
 	
-
+	// ddRevenueList 불러오기
+	@RequestMapping("selectlduv.do")
+	@ResponseBody
+	public Map<String,Object> selectlduv(Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) throws Exception {
+		System.out.println("list 불러오기 체크");
+		
+		logger.info("+ Start " + className + ".selectlduv");
+		logger.info("   - paramMap : " + paramMap);
+		
+		List<DdRevenueModelChart> listCopItemOrder = ddRevenueService.listCopItemOrderchart(paramMap);
+		
+		Map<String,Object> returnval = new HashMap<String,Object>();
+		
+		returnval.put("listCopItemOrder", listCopItemOrder);
+		returnval.put("listCopItemOrdercnt", listCopItemOrder.size());
+		
+		return returnval;
+	}
+	
+	
 }

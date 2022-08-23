@@ -19,9 +19,10 @@
 						<td>${list.loginID}</td>
 						<td>${list.bi_nm}</td>
 						<td>${list.si_nm}</td>
-						<td>${list.ord_tot}</td>
-						<td>${list.ord_ar}</td>
-						
+						<td>${list.si_price}</td>
+						<td>${list.do_nmt}</td>
+						<td>${list.total}</td>
+							
 				</tr>
 			</c:forEach>
 		</c:if>
@@ -29,14 +30,3 @@
 		<!-- 이거 중간에 있으면 table 안먹힘  -->
 
         <input type="hidden" id="totcnt" name="totcnt" value="${totDdRevenueModel}"/>
-
-
-
-
-
-
-
-
-
-
-

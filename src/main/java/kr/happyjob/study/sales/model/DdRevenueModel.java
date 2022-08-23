@@ -14,12 +14,22 @@ public class DdRevenueModel {
 	private String bi_nm;
     // 제품 명
 	private String si_nm;
-    // 수주 총액
-	private int ord_tot;
-    // 미수 금액
-	private int ord_ar;
+    // 제품 가격
+	private int si_price;
+    // 주문 갯수
+	private int do_nmt;
+	// 총액
+	private int total;
+	// 제품 총액
+	private int sumtotal;
 	
 	
+	public int getSumtotal() {
+		return sumtotal;
+	}
+	public void setSumtotal(int sumtotal) {
+		this.sumtotal = sumtotal;
+	}
 	public String getDo_date() {
 		return do_date;
 	}
@@ -56,16 +66,23 @@ public class DdRevenueModel {
 	public void setSi_nm(String si_nm) {
 		this.si_nm = si_nm;
 	}
-	public int getOrd_tot() {
-		return ord_tot;
+	public int getSi_price() {
+		return si_price;
 	}
-	public void setOrd_tot(int ord_tot) {
-		this.ord_tot = ord_tot;
+	public void setSi_price(int si_price) {
+		this.si_price = si_price;
 	}
-	public int getOrd_ar() {
-		return ord_ar;
+	public int getDo_nmt() {
+		return do_nmt;
 	}
-	public void setOrd_ar(int ord_ar) {
-		this.ord_ar = ord_ar;
+	public void setDo_nmt(int do_nmt) {
+		this.do_nmt = do_nmt;
 	}
+	public int getTotal() {
+		return total;
+	}
+	public void setTotal(int total) {
+		this.total = total;
+	}
+	
 }

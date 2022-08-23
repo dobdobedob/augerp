@@ -31,6 +31,37 @@
 		
 		// 버튼 누를때 작동하는것들
 		fRegisterButtonClickEvent();
+		 
+	    //  selectComCombo(comtype, combo_name, type, searchkey,selvalue)	
+		//  comtype    dept : 부서      acc  : 회계계정 대분류  accd  : 회계계정 분류   cli : 거래처    pro : 제품(전채) 
+		//  combo_name   select id
+		//  type    sel : 선택   all : 전체
+		//  searchkey    comtype이 회계계정 중분류인 경우  회계 계정 대분류 코드
+		$("#accall").change(function() {
+			selectComCombo("accd", "accdall", "all", $("#accall").val(), "");
+		});
+		selectComCombo("acc", "accall", "all", $("#accall").val(), "");
+		
+		selectComCombo("cli", "cilall", "all", "", "");
+		selectComCombo("pro", "proall", "all", "", "");
+		selectComCombo("dept", "deptall", "all", "", "");  // 부서콤보
+
+		// productCombo(comtype, combo_name, type, code, selvalue)
+		// comtype     l : 대분류    m : 중분류    p : 제품정보   
+		//  combo_name   select id
+		//  type    sel : 선택   all : 전체
+		//  code   대분류 인경우 ""    중분류인경우 대분류 코드      제품정보인경우 중분류 코드 
+		$("#prolall").change(function() {
+			productCombo("m", "promall", "all", $("#prolall").val(), "");
+            
+			//대분류를 바꾸면 중,제,부서가 지워져야지 새로운 조건이 보이기 때문에 remove를 사용한다.
+			$('#prodall').children('option').remove();
+		});
+
+		$("#promall").change(function() {
+			productCombo("p", "prodall", "all", $("#promall").val(), "");
+		});
+		productCombo("l", "prolall", "all", "", "");
 	});
 
 	
@@ -134,6 +165,8 @@
 		var param = {
 			searchitem : $("#searchitem").val()
 		   ,search : $("#search").val()
+		   ,prolall : $("#prolall").val()
+		   ,proall : $("#proall").val()
 	       ,to_month : $("#to_month").val()  
 	       ,curpage : curpage
 	       ,pageSize : pageSize
@@ -207,6 +240,13 @@
 						</p>
 						
 					<!--검색창  -->
+					
+					<tbody>
+	                        <tr style="border: 10px; border-color: blue">
+	                           <td width="40" height="25" style="font-size: 100%">부서</td><td><select id="deptall" name="deptall" v-model="deptall">	</select></td>        
+	                        </tr>
+					</tbody>
+					
 					<table width="100%" cellpadding="5" cellspacing="0" border="1"
                         align="left"
                         style="border-collapse: collapse; border: 1px #50bcdf;">
@@ -236,33 +276,11 @@
                         </tr>
                         <tr style="border: 0px; border-color: blue">
                            <td align="center" width="50" height="25" style="font-size: 100%">품목별</td>
-							
-							<td width="100" height="50" align="center" style="font-size: 100%">
-                                 <select name='searchitem'>
-								  <option value='' selected>-- 선택 --</option>
-								  <option value=${list.loginID}>사번</option>
-								  <option value=${list.pln_ar}>달성률</option>
-								  <option value=${list.dept_name}>부서명</option>
-								  <option value=${list.name}>사원명</option>
-								  <option value=${list.pln_nmt}>목표수량</option>
-								 </select>
-                           </td>
-							
+						   <td><select id="prolall" name="prolall"  v-model="prolall">	</select></td>
                            <td width="50" height="25" style="font-size: 100%">제품 이름</td>
-                           <td width="100" height="50" align="center" style="font-size: 100%">
-                                 <select name='si_nm'>
-                                  
-                                 
-								  <option value='' selected>-- 선택 --</option>
-								  <option value=${list.loginID}>사번</option>
-								  <option value=${list.pln_ar}>달성률</option>
-								  <option value=${list.dept_name}>부서명</option>
-								  <option value=${list.name}>사원명</option>
-								  <option value=${list.pln_nmt}>목표수량</option>
-								 </select>
-                           </td>
+                           <td><select id="proall" name="proall" v-model="proall">	</select></td>
                         </tr>
-                     </table>    
+                     </table>     
 						
 						
 						<div class="divbmsaleplanList">

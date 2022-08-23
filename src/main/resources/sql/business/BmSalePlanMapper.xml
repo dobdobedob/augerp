@@ -22,11 +22,17 @@
              inner join tb_sitem si on pl.si_cd = si.si_cd
              inner join tb_dept dep on u.dept_cd = dep.dept_cd
         <where>
+	       <if test="(prolall != null) and (!prolall.equals(''))">
+	            and si.bi_cd like (#{prolall})
+	       </if>             
+	       <if test="(proall != null) and (!proall.equals(''))">
+	            and si.si_cd like (#{proall})
+	       </if>	       
            <if test="(search != null) and (!search.equals(''))">
 	            and u.name like concat('%',#{title} ,'%')
 	       </if>
 	       <if test="(to_month != null) and (!to_month.equals(''))">
-	            and DATE_FORMAT(pln_ddate, '%Y-%m') <![CDATA[=]]> '#{to_month}'  
+	            and pln_ddate <![CDATA[=]]> STR_TO_DATE(concat(#{to_month},'-01'),'%Y-%m-%d')  
 	       </if>
 	   </where> 
        order by pl.pln_nmt DESC
@@ -38,12 +44,20 @@
 	/*kr.happy.study.business.dao.BmSalePlaneDao.BmSalePlanModel*/
 	  select count(*)
 	    from tb_planning pl
+	         inner join tb_userinfo u on pl.loginID = u.loginID
+             inner join tb_sitem si on pl.si_cd = si.si_cd
         <where>
+	       <if test="(prolall != null) and (!prolall.equals(''))">
+	            and si.bi_cd like (#{prolall})
+	       </if>             
+	       <if test="(proall != null) and (!proall.equals(''))">
+	            and si.si_cd like (#{proall})
+	       </if>        
            <if test="(search != null) and (!search.equals(''))">
 	            and u.name like concat('%',#{title} ,'%')
 	       </if>
 	       <if test="(to_month != null) and (!to_month.equals(''))">
-	            and DATE_FORMAT(pln_ddate, '%Y-%m') <![CDATA[=]]> '#{to_month}'  
+	            and pln_ddate <![CDATA[=]]> STR_TO_DATE(concat(#{to_month},'-01'),'%Y-%m-%d')  
 	       </if>		    
 	   </where> 
 	</select>
