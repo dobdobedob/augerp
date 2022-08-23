@@ -24,7 +24,10 @@
         <where>
 	       <if test="(prolall != null) and (!prolall.equals(''))">
 	            and si.bi_cd like (#{prolall})
-	       </if>             
+	       </if>  
+	       <if test="(promall != null) and (!proall.equals(''))">
+	            and si.mi_cd like (#{promall})
+	       </if>	                  
 	       <if test="(proall != null) and (!proall.equals(''))">
 	            and si.si_cd like (#{proall})
 	       </if>	       
@@ -49,7 +52,10 @@
         <where>
 	       <if test="(prolall != null) and (!prolall.equals(''))">
 	            and si.bi_cd like (#{prolall})
-	       </if>             
+	       </if> 
+	       <if test="(promall != null) and (!proall.equals(''))">
+	            and si.mi_cd like (#{promall})
+	       </if>	                   
 	       <if test="(proall != null) and (!proall.equals(''))">
 	            and si.si_cd like (#{proall})
 	       </if>        

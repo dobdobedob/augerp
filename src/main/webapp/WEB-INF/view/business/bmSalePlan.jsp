@@ -21,14 +21,6 @@
 		
 		// 영업실적 리스트 불러오기
 		fn_bmsaleplanlist();
-		
-		/* // 넣기 실패
-		// 품목별 콤보박스에 넣을거
-		fn_bi_cd_init();
-		// 제품 이름 콤보박스에 넣을거 
-		fn_si_nm_init();
-		 */
-		
 		// 버튼 누를때 작동하는것들
 		fRegisterButtonClickEvent();
 		 
@@ -41,7 +33,6 @@
 			selectComCombo("accd", "accdall", "all", $("#accall").val(), "");
 		});
 		selectComCombo("acc", "accall", "all", $("#accall").val(), "");
-		
 		selectComCombo("cli", "cilall", "all", "", "");
 		selectComCombo("pro", "proall", "all", "", "");
 		selectComCombo("dept", "deptall", "all", "", "");  // 부서콤보
@@ -64,83 +55,6 @@
 		productCombo("l", "prolall", "all", "", "");
 	});
 
-	
-/*  	
- * 콤보박스들기 실패
- // 품목별 콤보박스에 넣을거
-	function fn_bi_cd_init() {
-		console.log("fn_bi_cd_init 작동함");
-		sitemcombo("BKcd", "bi_cd_box", "all", "")
-	}
-	
-	// 제품 이름 콤보박스에 넣을거
-	function fn_si_nm_init() {
-		console.log("fn_si_nm_init 작동함");
-		sitemcombo("BKcd", "si_nm_box", "all", "")
-	} 
-	
-	function sitemcombo(group_code, combo_name, type, selvalue){
-		
-		console.log("comcombo Start !!!!!!!!!!!!!! ");
-		
-		var selectbox = document.getElementById(combo_name);
-
-		var data = {
-				"group_code" : group_code
-			};	
-		
-		$(selectbox).find("option").remove();
-	  	
-		//private String dtl_cod;	
-		//private String dtl_cod_nm;
-		
-		$.ajax({ 
-		     type: "POST",  
-		     url: "/business/sitemcombo.do", 
-		     dataType: "json",  
-		     data : data,
-		     success: function(data)
-		     { 				
-		    	 
-			     var json_obj = $.parseJSON(JSON.stringify(data));//parse JSON 
-			     var jsonstr = json_obj.list;
-			     console.log("jsonstr : " + jsonstr);
-			     
-			     var jsonstr_obj = $.parseJSON(JSON.stringify(jsonstr));//parse JSON 
-			     var listLen = jsonstr_obj.length;
-
-		    	 if(type == "all") {
-		    	    $(selectbox).append("<option value=''>전체</option>");
-		    	 }		     
-			     
-		    	 if(type == "sel") {
-			    	$(selectbox).append("<option value=''>선택</option>");
-			     }
-		    	 console.log(" selvalue : " + selvalue);
-		         for(var i=0; i<listLen; i++)
-		         { 		
-		        	 var eleString = JSON.stringify(jsonstr_obj[i]);
-		        	 var item_obj = $.parseJSON(eleString);//parse JSON
-	            
-		        	 if(selvalue != null && selvalue != null && selvalue != "") {
-		        		 if(selvalue == item_obj.dtl_cod) {
-		        			 console.log(" item_obj.dtl_cod : " + item_obj.dtl_cod);
-		        			 
-		        			 $(selectbox).append("<option value='"+ item_obj.dtl_cod + "' selected>" + item_obj.dtl_cod_nm + "</option>");
-		        		 } else {
-		        			 $(selectbox).append("<option value='"+ item_obj.dtl_cod + "'>" + item_obj.dtl_cod_nm + "</option>");
-		        		 }
-		        	 } else {
-		        		 $(selectbox).append("<option value='"+ item_obj.dtl_cod + "'>" + item_obj.dtl_cod_nm + "</option>");
-		        	 }
-		        	 
-		        	 
-		         } 
-		     },
-		     error:function(request,status,error){ alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error); }
-		});  
-	};	 */
-	
 	
 	function fRegisterButtonClickEvent() {
 		$('a[name=btn]').click(function(e) {
@@ -165,7 +79,12 @@
 		var param = {
 			searchitem : $("#searchitem").val()
 		   ,search : $("#search").val()
+		   ,usercode : $("#usercode").val()			// 사번, 달성률(입력 값 이상), 부서명, 사원명, 목표수량 < 목표 수량 이상하니까 빼자 pln_ar
+		   ,achievementrate : $("#achievementrate").val()
+		   ,deptname : $("#deptname").val()
+		   ,username : $("#username").val()
 		   ,prolall : $("#prolall").val()
+		   ,promall : $("#promall").val()
 		   ,proall : $("#proall").val()
 	       ,to_month : $("#to_month").val()  
 	       ,curpage : curpage
@@ -248,37 +167,34 @@
 					</tbody>
 					
 					<table width="100%" cellpadding="5" cellspacing="0" border="1"
-                        align="left"
                         style="border-collapse: collapse; border: 1px #50bcdf;">
-                        <tr style="border: 0px; border-color: blue" items="${listBmSalePlaneModel}" var="list">
+                        <tr style="border: 0px; border-color: blue" align="center" items="${listBmSalePlaneModel}" var="list" >
                         	<!-- 사번, 달성률, 부서명, 사원명, 실적수량 확인 박스 -->
                            <td width="100" height="50" align="center" style="font-size: 100%">
-                                 <select name='searchitem'>
+                                 <select id="searchitem" name='searchitem'>
 								  <option value='' selected>-- 선택 --</option>
-								  <option value=${list.loginID}>사번</option>
-								  <option value=${list.pln_ar}>달성률</option>
-								  <option value=${list.dept_name}>부서명</option>
-								  <option value=${list.name}>사원명</option>
-								  <option value=${list.pln_nmt}>목표수량</option>
+								  <option id="usercode" name="usercode" >사번</option>
+								  <option id="achievementrate" name="achievementrate" >달성률</option>
+								  <option id="deptname" name="deptname" >부서명</option>
+								  <option id="username" name="username" >사원명</option>
 								 </select>
                            </td>
                            
-                           <td width="50" height="25" style="font-size: 100%">
+                           <td width="40" height="25" style="font-size: 100%">
                                <input type="text" style="width: 120px" id="search" name="search"></td>
-
-                           <td width="50" height="25" style="font-size: 100%">월 조회</td>
-                           <td width="50" height="25" style="font-size: 100%">
+                           <td width="40" height="25" style="font-size: 100%">월 조회</td>
+                           <td width="40" height="25" style="font-size: 100%">
                             <input type="month" style="width: 120px" id="to_month" name="to_month"></td>
-                           <td width="110" height="60" style="font-size: 120%">
+                           <td width="120" height="60" style="font-size: 120%">
                            <a href="" class="btnType blue" id="searchBtn" name="btn"><span>조  회</span></a></td> 
-                            <!-- <input type="button" value="검  색  " id="searchBtn" name="btn" class="test_btn1" 
-                              style="border-collapse: collapse; border: 0px gray solid; background-color: #50bcdf; width: 70px; color: white"/> -->
                         </tr>
-                        <tr style="border: 0px; border-color: blue">
-                           <td align="center" width="50" height="25" style="font-size: 100%">품목별</td>
+                        <tr style="border: 0px; border-color: blue " align="center" >
+                           <td align="center" width="50" height="25" style="font-size: 100%">제품 대분류</td>
 						   <td><select id="prolall" name="prolall"  v-model="prolall">	</select></td>
-                           <td width="50" height="25" style="font-size: 100%">제품 이름</td>
-                           <td><select id="proall" name="proall" v-model="proall">	</select></td>
+						   <td width="40" height="25" style="font-size: 100%">제품 중분류</td>
+						   <td><select id="promall" name="promall" v-model="promall">	</select></td>
+                           <td width="40" height="25" style="font-size: 100%">제품 명</td>
+                           <td><select id="prodall" name="prodall" v-model="prodall">	</select></td> 
                         </tr>
                      </table>     
 						

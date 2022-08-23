@@ -1,7 +1,6 @@
 package kr.happyjob.study.business.controller;
 
-import java.io.File;
-import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.happyjob.study.business.model.BmSalePlanModel;
+import kr.happyjob.study.business.model.selcombo;
 import kr.happyjob.study.business.service.BmSalePlanService;
-import kr.happyjob.study.common.comnUtils.ComnCodUtil;
-import kr.happyjob.study.system.model.ComnCodUtilModel;
+import kr.happyjob.study.business.service.SelectComboService;
+import kr.happyjob.study.system.model.comcombo;
 
 @Controller
 @RequestMapping("/business/")
@@ -31,6 +30,9 @@ public class BmSalePlanController {
 
 	@Autowired
 	BmSalePlanService bmsaleplanService;
+	
+	@Autowired
+	SelectComboService selectComboService;
 	
 	// Set logger
 	private final Logger logger = LogManager.getLogger(this.getClass());
@@ -100,33 +102,47 @@ public class BmSalePlanController {
 		
 		return "business/bmSalePlanList";
 	}
-	
+
 	/**
-	 * 콤보박스 만들고싶었어요 근데 group_code 쪽으로 어떻게 가는지 모르겠어서 닫았습니다.
-	@RequestMapping(value="/sitemcombo.do")
+	 *  선택 콤보
+	 */
+	@RequestMapping("selectCombo.do")
 	@ResponseBody
-	public  Map<String,Object> sitemcombo(Model model, 
-			@RequestParam Map<String, Object> paramMap, 
-			HttpServletRequest request,
-			HttpServletResponse response, 
-			HttpSession session) throws Exception {
-	
-		System.out.println("sitemcombo 작동함 !!!");
+	public Map<String, Object> selectCombo (Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) throws Exception {
 		
-		logger.info("+ Start " + className );
+		logger.info("+ Start " + className + ".selectCombo");
 		logger.info("   - paramMap : " + paramMap);
+
+		String ComType = (String) paramMap.get("comtype");
+			
+		List<selcombo> comComboModel = new ArrayList<>();
 		
-		String groupcode = (String) paramMap.get("group_code");
+		logger.info("   - ComType : " + ComType);
 		
-		List<ComnCodUtilModel> list = ComnCodUtil.getComnCod(groupcode);	// 공유대상구분코드 (M제외)
+		if("s".equals(ComType)) {
+			// 사번
+			comComboModel = selectComboService.selectusercode(paramMap);
+		} else if("a".equals(ComType)) {
+			// 달성률
+			comComboModel = selectComboService.selectachievementrate(paramMap);
+		} else if("d".equals(ComType)) {
+			// 부서명
+			comComboModel = selectComboService.selectdeptname(paramMap);
+		} else if("u".equals(ComType)) {
+			// 사원명
+			comComboModel = selectComboService.selectusername(paramMap);
+		}
+		사번, 달성률(입력 값 이상), 부서명, 사원명
+		usercode, achievementrate, deptname, username
 		
 		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		resultMap.put("list", comComboModel);
 		
-		resultMap.put("list", list);
+		logger.info("+ End " + className + ".productCombo");
 		
-		logger.info("+ End " + className + " : " + list.size());
-		 
 		return resultMap;
-	} */
-		
+	}	
+	
 }
