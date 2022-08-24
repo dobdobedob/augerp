@@ -135,6 +135,6 @@
 	     </where>	         
   group by bt.bi_nm  
   order by o.ord_no
-       , bt.bi_nm DESC      
+         , bt.bi_nm DESC      
     </select>        
 </mapper>
