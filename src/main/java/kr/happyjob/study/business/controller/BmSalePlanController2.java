@@ -113,22 +113,22 @@ public class BmSalePlanController {
 		logger.info("+ Start " + className + ".selectCombo");
 		logger.info("   - paramMap : " + paramMap);
 
-		String ComType = (String) paramMap.get("comtype");
+		String Selecttype = (String) paramMap.get("selecttype");
 			
 		List<selcombo> comComboModel = new ArrayList<>();
 		
-		logger.info("   - ComType : " + ComType);
+		logger.info("   - Selecttype : " + Selecttype);
 		
-		if("s".equals(ComType)) {
+		if("s".equals(Selecttype)) {
 			// 사번
 			comComboModel = selectComboService.selectusercode(paramMap);
-		} else if("a".equals(ComType)) {
+		} else if("a".equals(Selecttype)) {
 			// 달성률
 			comComboModel = selectComboService.selectachievementrate(paramMap);
-		} else if("d".equals(ComType)) {
+		} else if("d".equals(Selecttype)) {
 			// 부서명
 			comComboModel = selectComboService.selectdeptname(paramMap);
-		} else if("u".equals(ComType)) {
+		} else if("u".equals(Selecttype)) {
 			// 사원명
 			comComboModel = selectComboService.selectusername(paramMap);
 		}
