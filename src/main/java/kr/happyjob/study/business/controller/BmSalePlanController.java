@@ -101,47 +101,47 @@ public class BmSalePlanController {
 		
 		return "business/bmSalePlanList";
 	}
-
-	/**
-	 *  선택 콤보
-	 */
+	
+	// 선택 콤보
+	 
 	@RequestMapping("selectCombo.do")
 	@ResponseBody
 	public Map<String, Object> selectCombo (Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) throws Exception {
-		
-		logger.info("+ Start " + className + ".selectCombo");
-		logger.info("   - paramMap : " + paramMap);
+		 
+			logger.info("+ Start " + className + ".selectCombo");
+			logger.info("   - paramMap : " + paramMap);		 
 
-		String ComType = (String) paramMap.get("comtype");
+			String ComType = (String) paramMap.get("comtype");
+
+			List<selcombo> comComboModel = new ArrayList<>();
+
+			logger.info("   - ComType : " + ComType);
+
+			if("s".equals(ComType)) {
+				// 사번
+				comComboModel = selectComboService.selectusercode(paramMap);
+			} else if("a".equals(ComType)) {
+				// 달성률
+				comComboModel = selectComboService.selectachievementrate(paramMap);
+			} else if("d".equals(ComType)) {
+				// 부서명
+				comComboModel = selectComboService.selectdeptname(paramMap);
+			} else if("u".equals(ComType)) {
+				// 사원명
+				comComboModel = selectComboService.selectusername(paramMap);
+			}
+			//사번, 달성률(입력 값 이상), 부서명, 사원명
+			//usercode, achievementrate, deptname, username
+
+			Map<String, Object> resultMap = new HashMap<String, Object>();
+
+			resultMap.put("list", comComboModel);
 			
-		List<selcombo> comComboModel = new ArrayList<>();
-		
-		logger.info("   - ComType : " + ComType);
-		
-		if("s".equals(ComType)) {
-			// 사번
-			comComboModel = selectComboService.selectusercode(paramMap);
-		} else if("a".equals(ComType)) {
-			// 달성률
-			comComboModel = selectComboService.selectachievementrate(paramMap);
-		} else if("d".equals(ComType)) {
-			// 부서명
-			comComboModel = selectComboService.selectdeptname(paramMap);
-		} else if("u".equals(ComType)) {
-			// 사원명
-			comComboModel = selectComboService.selectusername(paramMap);
-		}
-		//사번, 달성률(입력 값 이상), 부서명, 사원명
-		//usercode, achievementrate, deptname, username
-		
-		Map<String, Object> resultMap = new HashMap<String, Object>();
+			logger.info("+ End " + className + ".productCombo");
+			
+			return resultMap;			
+			
+	 }
 
-		resultMap.put("list", comComboModel);
-		
-		logger.info("+ End " + className + ".productCombo");
-		
-		return resultMap;
-	}	
-	
 }

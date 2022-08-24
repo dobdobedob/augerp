@@ -22,15 +22,15 @@
              inner join tb_sitem si on pl.si_cd = si.si_cd
              inner join tb_dept dep on u.dept_cd = dep.dept_cd
         <where>
-	       <if test="(prolall != null) and (!prolall.equals(''))">
+  	       <if test="(prolall != null) and (!prolall.equals(''))">
 	            and si.bi_cd like (#{prolall})
-	       </if>  
-	       <if test="(promall != null) and (!proall.equals(''))">
+	       </if>   
+	       <if test="(promall != null) and (!promall.equals(''))">
 	            and si.mi_cd like (#{promall})
 	       </if>	                  
-	       <if test="(proall != null) and (!proall.equals(''))">
-	            and si.si_cd like (#{proall})
-	       </if>	       
+ 	       <if test="(prodall != null) and (!prodall.equals(''))">
+	            and si.si_cd like (#{prodall})
+	       </if>
            <if test="(search != null) and (!search.equals(''))">
 	            and u.name like concat('%',#{title} ,'%')
 	       </if>
@@ -50,15 +50,15 @@
 	         inner join tb_userinfo u on pl.loginID = u.loginID
              inner join tb_sitem si on pl.si_cd = si.si_cd
         <where>
-	       <if test="(prolall != null) and (!prolall.equals(''))">
+  	       <if test="(prolall != null) and (!prolall.equals(''))">
 	            and si.bi_cd like (#{prolall})
-	       </if> 
-	       <if test="(promall != null) and (!proall.equals(''))">
+	       </if>   
+	       <if test="(promall != null) and (!promall.equals(''))">
 	            and si.mi_cd like (#{promall})
-	       </if>	                   
-	       <if test="(proall != null) and (!proall.equals(''))">
-	            and si.si_cd like (#{proall})
-	       </if>        
+	       </if>	                  
+ 	       <if test="(prodall != null) and (!prodall.equals(''))">
+	            and si.si_cd like (#{prodall})
+	       </if>
            <if test="(search != null) and (!search.equals(''))">
 	            and u.name like concat('%',#{title} ,'%')
 	       </if>

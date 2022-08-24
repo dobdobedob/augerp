@@ -1,4 +1,4 @@
-<%-- <%@ page language="java" contentType="text/html; charset=UTF-8"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -23,7 +23,20 @@
 		fn_bmsaleplanlist();
 		// 버튼 누를때 작동하는것들
 		fRegisterButtonClickEvent();
-		
+		 
+	    //  selectComCombo(comtype, combo_name, type, searchkey,selvalue)	
+		//  comtype    dept : 부서      acc  : 회계계정 대분류  accd  : 회계계정 분류   cli : 거래처    pro : 제품(전채) 
+		//  combo_name   select id
+		//  type    sel : 선택   all : 전체
+		//  searchkey    comtype이 회계계정 중분류인 경우  회계 계정 대분류 코드
+		$("#accall").change(function() {
+			selectComCombo("accd", "accdall", "all", $("#accall").val(), "");
+		});
+		selectComCombo("acc", "accall", "all", $("#accall").val(), "");
+		selectComCombo("cli", "cilall", "all", "", "");
+		selectComCombo("pro", "proall", "all", "", "");
+		selectComCombo("dept", "deptall", "all", "", "");  // 부서콤보
+
 		// productCombo(comtype, combo_name, type, code, selvalue)
 		// comtype     l : 대분류    m : 중분류    p : 제품정보   
 		//  combo_name   select id
@@ -147,16 +160,15 @@
 						
 					<!--검색창  -->
 					
-					<!-- <tbody>
+					<tbody>
 	                        <tr style="border: 10px; border-color: blue">
-	                           <td width="40" height="25" style="font-size: 100%">부서</td>
-	                           <td><select id="deptall" name="deptall" v-model="deptall">	</select></td>        
+	                           <td width="40" height="25" style="font-size: 100%">부서</td><td><select id="deptall" name="deptall" v-model="deptall">	</select></td>        
 	                        </tr>
-					</tbody> -->
+					</tbody>
 					
 					<table width="100%" cellpadding="5" cellspacing="0" border="1"
                         style="border-collapse: collapse; border: 1px #50bcdf;">
-                        <tr style="border: 0px; border-color: blue" align="center" >
+                        <tr style="border: 0px; border-color: blue" align="center" items="${listBmSalePlaneModel}" var="list" >
                         	<!-- 사번, 달성률, 부서명, 사원명, 실적수량 확인 박스 -->
                            <td width="100" height="50" align="center" style="font-size: 100%">
                                  <select id="searchitem" name='searchitem'>
@@ -243,4 +255,3 @@
 
 </body>
 </html>
- --%>

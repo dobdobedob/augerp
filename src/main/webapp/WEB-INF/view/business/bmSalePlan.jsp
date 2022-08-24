@@ -16,6 +16,7 @@
 	var pageSize = 10;		// 화면에 뿌려질 데이터 수
 	var pageBlock = 10;		// 블럭으로 잡히는 페이징 수 < 사실 무슨소린지 잘 모르겠 그러니까 블럭? 데이터 들어올 칸을 10칸 만들겠다는 소리?
 	console.log("bmsal eplan 작동함");
+	
 	// fn(fuction) 이거이거 쓸꺼니까 대기시켜놔라
 	$(document).ready(function () {
 		
@@ -23,20 +24,15 @@
 		fn_bmsaleplanlist();
 		// 버튼 누를때 작동하는것들
 		fRegisterButtonClickEvent();
-		 
-	    //  selectComCombo(comtype, combo_name, type, searchkey,selvalue)	
-		//  comtype    dept : 부서      acc  : 회계계정 대분류  accd  : 회계계정 분류   cli : 거래처    pro : 제품(전채) 
-		//  combo_name   select id
-		//  type    sel : 선택   all : 전체
-		//  searchkey    comtype이 회계계정 중분류인 경우  회계 계정 대분류 코드
-		$("#accall").change(function() {
-			selectComCombo("accd", "accdall", "all", $("#accall").val(), "");
+		
+		$("#searchitemall").change(function() {
+			selectCombo("searchitem", "searchitemall", "all", "", "");
 		});
-		selectComCombo("acc", "accall", "all", $("#accall").val(), "");
-		selectComCombo("cli", "cilall", "all", "", "");
-		selectComCombo("pro", "proall", "all", "", "");
-		selectComCombo("dept", "deptall", "all", "", "");  // 부서콤보
-
+		selectCombo("s", "sall", "all", "", "");
+		selectCombo("a", "aall", "all", "", "");
+		selectCombo("d", "dall", "all", "", "");
+		selectCombo("u", "uall", "all", "", "");
+		
 		// productCombo(comtype, combo_name, type, code, selvalue)
 		// comtype     l : 대분류    m : 중분류    p : 제품정보   
 		//  combo_name   select id
@@ -85,7 +81,7 @@
 		   ,username : $("#username").val()
 		   ,prolall : $("#prolall").val()
 		   ,promall : $("#promall").val()
-		   ,proall : $("#proall").val()
+		   ,prodall : $("#prodall").val()
 	       ,to_month : $("#to_month").val()  
 	       ,curpage : curpage
 	       ,pageSize : pageSize
@@ -98,6 +94,70 @@
 	    callAjax("/business/listBmSalePlaneModel.do", "post", "text", true, param, bmsaleplanListcallback);
 	    
 	}
+	
+	// 선택 콤보   selecttype : s = 사번, a = 달성률, d = 부서명, u = 사원명
+	// selectComCombo("s", combo_name, type, "",selvalue)
+	function selectCombo(selecttype, combo_name, type, searchkey,selvalue){
+	
+		console.log("selectCombo Start !!!!!!!!!!!!!! ");
+		
+		var selectbox = document.getElementById(combo_name);
+
+		var data = {
+				"selecttype" : selecttype
+			   ,"searchkey" : searchkey
+			};	
+		
+		$(selectbox).find("option").remove();
+	  		
+		$.ajax({ 
+		     type: "POST",  
+		     url: "/business/selectCombo.do", 
+		     dataType: "json",  
+		     data : data,
+		     success: function(data)
+		     { 				
+		    	 
+			     var json_obj = $.parseJSON(JSON.stringify(data));//parse JSON 
+			     var jsonstr = json_obj.list;
+			     console.log("jsonstr : " + jsonstr);
+			     
+			     var jsonstr_obj = $.parseJSON(JSON.stringify(jsonstr));//parse JSON 
+			     var listLen = jsonstr_obj.length;
+
+		    	 if(type == "all") {
+		    	    $(selectbox).append("<option value=''>전체</option>");
+		    	 }		     
+			     
+		    	 if(type == "sel") {
+			    	$(selectbox).append("<option value=''>선택</option>");
+			     }
+		    	 console.log(" selvalue : " + selvalue);
+		         for(var i=0; i<listLen; i++)
+		         { 		
+		        	 var eleString = JSON.stringify(jsonstr_obj[i]);
+		        	 var item_obj = $.parseJSON(eleString);//parse JSON
+	            
+		        	 if(selvalue != null && selvalue != null && selvalue != "") {
+		        		 if(selvalue == item_obj.dtl_cod) {
+		        			 console.log(" item_obj.cd : " + item_obj.cd);
+		        			 
+		        			 $(selectbox).append("<option value='"+ item_obj.cd + "' selected>" + item_obj.name + "</option>");
+		        		 } else {
+		        			 $(selectbox).append("<option value='"+ item_obj.cd + "'>" + item_obj.name + "</option>");
+		        		 }
+		        	 } else {
+		        		 $(selectbox).append("<option value='"+ item_obj.cd + "'>" + item_obj.name + "</option>");
+		        	 }
+		        	 
+		        	 
+		         } 
+		         
+		         $(selectbox).val(selvalue);
+		     },
+		     error:function(request,status,error){ alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error); }
+		});  
+	};
 	
 	function fn_bmsaleplanListcallback(returndata,curpage) {	   
 	    console.log("fn_bmsaleplanlistcallback 작동함");
@@ -160,15 +220,16 @@
 						
 					<!--검색창  -->
 					
-					<tbody>
+					<!-- <tbody>
 	                        <tr style="border: 10px; border-color: blue">
-	                           <td width="40" height="25" style="font-size: 100%">부서</td><td><select id="deptall" name="deptall" v-model="deptall">	</select></td>        
+	                           <td width="40" height="25" style="font-size: 100%">부서</td>
+	                           <td><select id="deptall" name="deptall" v-model="deptall">	</select></td>        
 	                        </tr>
-					</tbody>
+					</tbody> -->
 					
 					<table width="100%" cellpadding="5" cellspacing="0" border="1"
                         style="border-collapse: collapse; border: 1px #50bcdf;">
-                        <tr style="border: 0px; border-color: blue" align="center" items="${listBmSalePlaneModel}" var="list" >
+                        <tr style="border: 0px; border-color: blue" align="center" >
                         	<!-- 사번, 달성률, 부서명, 사원명, 실적수량 확인 박스 -->
                            <td width="100" height="50" align="center" style="font-size: 100%">
                                  <select id="searchitem" name='searchitem'>
@@ -189,11 +250,11 @@
                            <a href="" class="btnType blue" id="searchBtn" name="btn"><span>조  회</span></a></td> 
                         </tr>
                         <tr style="border: 0px; border-color: blue " align="center" >
-                           <td align="center" width="50" height="25" style="font-size: 100%">제품 대분류</td>
+                           <td align="center" width="120" height="50" style="font-size: 100%">제품 대분류</td>
 						   <td><select id="prolall" name="prolall"  v-model="prolall">	</select></td>
-						   <td width="40" height="25" style="font-size: 100%">제품 중분류</td>
+						   <td width="120" height="50" style="font-size: 100%">제품 중분류</td>
 						   <td><select id="promall" name="promall" v-model="promall">	</select></td>
-                           <td width="40" height="25" style="font-size: 100%">제품 명</td>
+                           <td width="120" height="50" style="font-size: 100%">제품 명</td>
                            <td><select id="prodall" name="prodall" v-model="prodall">	</select></td> 
                         </tr>
                      </table>     
