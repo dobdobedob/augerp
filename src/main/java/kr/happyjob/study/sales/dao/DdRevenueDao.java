@@ -1,5 +1,6 @@
 package kr.happyjob.study.sales.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,5 +20,7 @@ public interface DdRevenueDao {
 	public List<DdRevenueModel> listCircleGraph(Map<String, Object> paramMap) throws Exception;
 	
 	public int totCircleGraph(Map<String, Object> paramMap) throws Exception;
+	
+	public ArrayList<DdRevenueModel> listvkdl (Map<String, Object> paramMap) throws Exception;
 	
 }

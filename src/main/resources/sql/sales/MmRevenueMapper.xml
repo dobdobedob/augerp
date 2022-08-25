@@ -31,6 +31,6 @@
 	  select count(*)
 	    from tb_dtlor dor
 	         inner join tb_order o on o.ord_no = dor.ord_no
-	</select>     
-	
+	</select>
+
 </mapper>	

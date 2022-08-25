@@ -1,5 +1,6 @@
 package kr.happyjob.study.sales.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,5 +68,16 @@ public class DdRevenueServiceImple implements DdRevenueService {
 		
 		return totCircleGraph;
 		
-	};		
+	}
+
+	@Override
+	public ArrayList<DdRevenueModel> listvkdl(Map<String, Object> paramMap) throws Exception {
+
+		ArrayList<DdRevenueModel> listvkdl = ddRevenueeDao.listvkdl(paramMap);
+		
+		return listvkdl;
+	};
+	
+	
+	
 }

@@ -1,6 +1,5 @@
 package kr.happyjob.study.sales.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import kr.happyjob.study.sales.service.DdRevenueService;
-import kr.happyjob.study.system.model.ComnCodUtilModel;
-import kr.happyjob.study.system.model.comcombo;
-import kr.happyjob.study.system.service.ComnComboService;
-import kr.happyjob.study.common.comnUtils.ComnCodUtil;
 import kr.happyjob.study.sales.model.DdRevenueModel;
 import kr.happyjob.study.sales.model.DdRevenueModelChart;
+import kr.happyjob.study.sales.service.DdRevenueService;
+import kr.happyjob.study.system.service.ComnComboService;
 
 @Controller
 @RequestMapping("/sales/")
@@ -74,7 +70,6 @@ public class DdRevenueController {
 		
 		logger.info("+ Start " + className + ".listnotice");
 		logger.info("   - paramMap : " + paramMap);
-		
 
 	    int curpage = Integer.parseInt((String) paramMap.get("curpage"));
 	    int pageSize = Integer.parseInt((String) paramMap.get("pageSize"));
@@ -85,24 +80,12 @@ public class DdRevenueController {
 		
 		List<DdRevenueModel> listDdRevenueModel = ddRevenueService.listDdRevenueModel(paramMap);
 		List<DdRevenueModel> listCopItemOrder = ddRevenueService.listCopItemOrder(paramMap);
-		
-		//List<ComnCodUtilModel> db = ComnCodUtil.getComnCod("DBCD");
-	
-	    // 상품 대분류
-        //List<comcombo> comComboModel = comnComboService.selectlargelist(paramMap);
-		
-        //String ldiv = "";
-        
-        
-        
         
 		int totDdRevenueModel = ddRevenueService.totDdRevenueModel(paramMap);
 		
 		model.addAttribute("listDdRevenueModel", listDdRevenueModel);
 		model.addAttribute("totDdRevenueModel", totDdRevenueModel);
 		model.addAttribute("listCopItemOrder", listCopItemOrder);
-		//model.addAttribute("comComboModel", comComboModel);
-		
 		
 		model.addAttribute("curpage", curpage);
 		model.addAttribute("pageSize", pageSize);		
@@ -116,7 +99,7 @@ public class DdRevenueController {
 		return "sales/ddRevenueList";
 	}
 	
-	// ddRevenueList 불러오기
+	// selectlduv 불러오기
 	@RequestMapping("selectlduv.do")
 	@ResponseBody
 	public Map<String,Object> selectlduv(Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
@@ -139,29 +122,39 @@ public class DdRevenueController {
 	// CircleGraph 필요값들 DdRevenue 페이지로 주고 받기
 	@RequestMapping("CircleGraph.do")
 	@ResponseBody
-	public String CircleGraph(Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
-			HttpServletResponse response, HttpSession session) throws Exception {
+	public String listCircleGraph(Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session/*, ArrayList arraylist*/) throws Exception {
 		System.out.println("CircleGraph 불러오기 체크");
 		
-		logger.info("+ Start " + className + ".listnotice");
-		logger.info("   - paramMap : " + paramMap);
-		
-		
 		List<DdRevenueModel> listCircleGraph = ddRevenueService.listCircleGraph(paramMap);
-        
+		
+		
+		
+		/*
+		ArrayList<DdRevenueModel> list = new ArrayList<DdRevenueModel>();
+		model.addAttribute("list",list);
+		
+		*/
+		
+		
 		int totCircleGraph = ddRevenueService.totCircleGraph(paramMap);
 		
 		model.addAttribute("listCircleGraph", listCircleGraph);
 		model.addAttribute("totCircleGraph", totCircleGraph);
 		
+		System.out.println("model :" +model);
+		logger.info("model : " + model);
+		
 		logger.info("listCircleGraph : " + listCircleGraph);
 		logger.info("totCircleGraph : " + totCircleGraph);
 		
-		for(DdRevenueModel data: listDdRevenueModel){
-			System.out.println(data);
+		for(DdRevenueModel data: listCircleGraph){
+			System.out.println("listCircleGraph의Si_nm : " +data.getSi_nm());
+			System.out.println("listCircleGraph의Cop_nm : " +data.getCop_nm());
+			System.out.println("listCircleGraph의Total : " +data.getTotal());
 		}
 		
-		return "sales/ddRevenueList";
+		return "sales/ddRevenue";
 	}	
 	
 	

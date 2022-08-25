@@ -15,8 +15,6 @@
 						<%-- 이거 뭐가져오는건지? 파일이랑 모달창 띄우는건가 지워도 될거같다
 					    <td><a href="javascript:fn_NoticeModalfile(${list.ann_no});">${list.ann_no}</a></td>
 						<td><a href="javascript:fn_NoticeModal(${list.ann_no});">${list.ann_title}</a></td> --%> 
-						
-						
 						<td>${list.loginID}</td>
 						<td>${list.dept_name}</td>
 						<td>${list.name}</td>

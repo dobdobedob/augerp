@@ -108,7 +108,7 @@
 <script type="text/javascript">
 
 	// 페이징 설정 
-	var pageSize = 3;		// 화면에 뿌려질 데이터 수
+	var pageSize = 6;		// 화면에 뿌려질 데이터 수
 	var pageBlock = 10;		// 블럭으로 잡히는 페이징 수 < 사실 무슨소린지 잘 모르겠 그러니까 블럭? 데이터 들어올 칸을 10칸 만들겠다는 소리?
 	
 	// ready 시켜놓는 함수들		

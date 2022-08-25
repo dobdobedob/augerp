@@ -17,19 +17,18 @@
 <script type="text/javascript">
   google.charts.load('current', {'packages':['corechart']});
   google.charts.setOnLoadCallback(drawChart);
-
+  
   function drawChart() {
 	  
     var data = google.visualization.arrayToDataTable([
 
-      ['Task', 'options 아무거나'],
-      ['Work',     11],
-      ['Eat',      2],
-      ['Commute',  2],
-      ['Watch TV', 2],
-      ['Sleep',    7]
-    ]);
-	
+		["제목", "갯수"],
+		["1번", 22],
+		["2번", 12],
+		["3번", 33]
+
+  	]);
+
     var options = {
       title: '매출 별 기업 비율'
     };
@@ -38,6 +37,9 @@
 
     chart.draw(data, options);
   }
+
+
+
 </script>
 <!-- 원형 그래프 끝 -->
 
@@ -79,18 +81,21 @@
 		
 		// 버튼 누를때 작동하는것들
 		fRegisterButtonClickEvent();
+		
+		// 그래프 정보 불러오기
+		fn_CircleGraph();
+
 	});	
 	</script>
-<!-- 	<!-- 그래프 시작 -->
-	<script type="text/javascript">
+ 	<!-- 그래프 시작 -->
+	<!-- <script type="text/javascript">
 	google.load('visualization', '1', {packages: ['corechart']});
-	</script>
-	<script type="text/javascript">    
+	</script> -->
+<!-- 	<script type="text/javascript">    
 	function drawVisualization() {
 		
 		 var param = {
 				    cilall : $("#cilall").val()
-				   ,search : $("#search").val()
 			       ,from_date : $("#from_date").val()  
 			       ,to_date : $("#to_date").val() 
 			       ,curpage : 1
@@ -187,8 +192,8 @@
 			}
 			
 			google.setOnLoadCallback(drawVisualization);
-	</script>
-	그래프 끝	 -->
+	</script> -->
+	<!-- 그래프 끝 -->	 
 <script type="text/javascript">
 	function fRegisterButtonClickEvent() {
 		$('a[name=btn]').click(function(e) {
@@ -199,6 +204,7 @@
 			switch (btnId) {
 				case 'searchBtn' :
 					fn_ddrvenuelist();
+					fn_CircleGraph();
 					console.log("searchBtn 작동함");
 					break;
 			}
@@ -212,7 +218,6 @@
 			
 		var param = {
 			cilall : $("#cilall").val()
-		   ,search : $("#search").val()
 	       ,from_date : $("#from_date").val()  
 	       ,to_date : $("#to_date").val() 
 	       ,curpage : curpage
@@ -242,6 +247,39 @@
 		$("#currentPage").val(curpage);
    }	
 	
+	// fn_CircleGraph 불러오기
+	function fn_CircleGraph(curpage) {
+		
+		console.log("CircleGraph 작동함");
+		curpage = curpage || 1;
+		
+		var param = {
+			cilall : $("#cilall").val()
+	       ,from_date : $("#from_date").val()  
+	       ,to_date : $("#to_date").val() 
+	       ,curpage : curpage
+			};
+		   
+	    var circlegraphcallback = function(returndata,curpage) {
+	    	fn_circlegraphcallback(returndata,curpage) ;  
+	    	console.log("뿌뿌뿌 작동함" + JSON.stringify(returndata));
+			
+	        } 
+
+	    callAjax("/sales/CircleGraph.do", "post", "text", true, param, circlegraphcallback);
+	    
+	}	
+	
+	// 그래프 정보 콜백함수
+ 	function fn_circlegraphcallback(returndata,curpage) {	   
+	    console.log("fn_circlegraphcallback 작동함"+returndata);
+	    
+	    $("#circlegraph").empty().append(returndata);	   
+	    var totcnt = $("#totcnt").val();
+	    
+   }	
+		
+	
 </script>
 
 </head>
@@ -249,11 +287,12 @@
 <body>
 	<!-- ///////////////////// html 페이지  ///////////////////////////// -->
 
-<form id="myNotice" action="" method="">
+<form id="" action="" method="">
 	<input type="hidden" id="currentPage" value="1">  <!-- 현재페이지는 처음에 항상 1로 설정하여 넘김  -->
 	<input type="hidden" name="action" id="action" value=""> 
 	<input type="hidden" name="selectannno" id="selectannno" value=""> 
     <input type="hidden" id="pln_no"  name="pln_no"  value="">
+    
 	<div id="wrap_area">
 
 		<h2 class="hidden">header 영역</h2>
@@ -347,6 +386,30 @@
 							<!-- <th id="chart_div" style="width: 450px; height: 250px;"></th> -->
 							<!-- 원형 차트 -->
 							<th id="piechart" style="width: 450px; height: 250px;"></th>
+							
+							<tr>
+	                        		<%-- <c:if test="${totCircleGraph > 0 }">
+										<c:forEach items="${listCircleGraph}" var="list">			
+											<tr>
+													<td>${list.cop_nm}</td>
+													<td>${list.si_nm}</td>
+													<td>${list.total}</td>
+													
+											</tr>
+										</c:forEach>
+									</c:if>
+	                        	<td items="${listCircleGraph}" var="list">${list.cop_nm}</td> --%>
+	                        	<td>2</td>
+	                        	<td>3</td>
+	                        	<td>4</td>
+	                        	<td>5</td>
+	                        	<td>6</td>
+	                        	<td>7</td>
+	                        	<td>8</td>
+	                        	<td>9</td>
+	                         <c:if test=""></c:if>
+	                        </tr>
+                        
 						</tr>	
 						
 			<c:forEach items="${listCopItemOrder}" var="list">			
