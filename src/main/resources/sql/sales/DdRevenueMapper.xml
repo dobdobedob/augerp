@@ -133,8 +133,66 @@
 	            and do_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
 	       </if>
 	     </where>	         
-  group by bt.bi_nm  
-  order by o.ord_no
-         , bt.bi_nm DESC      
-    </select>        
+    group by bt.bi_nm  
+    order by o.ord_no
+           , bt.bi_nm DESC      
+    </select>  
+    
+    
+	<!-- 원형 그래프용 제품별 매출 -->     
+    <select id="listCircleGraph" resultType="kr.happyjob.study.sales.model.DdRevenueModel">
+	/*kr.happy.study.sales.dao.DdRevenueDao.DdRevenueModel*/
+      select cop.cop_nm
+           , sit.si_nm			
+           , sum(sit.si_price * dor.do_nmt) as total
+        from tb_order o
+       	     inner join tb_dtlor dor on o.ord_no = dor.ord_no
+       	     inner join tb_company cop on o.cop_no = cop.cop_no
+       	     inner join tb_sitem sit on sit.si_cd = dor.si_cd
+       	     inner join tb_bitem bt on bt.bi_cd = sit.bi_cd
+         <where>
+	       <if test="(cilall != null) and (!cilall.equals(''))">
+	            and o.cop_no like (#{cilall})
+	       </if>  	         
+	       <if test="(from_date != null) and (!from_date.equals(''))">
+	            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+	       </if>
+	       <if test="(to_date != null) and (!to_date.equals(''))">
+	            and do_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+	       </if>
+	     </where>                
+         group by cop.cop_nm
+                , sit.si_nm
+         order by total DESC
+    </select>
+    
+    
+	<!-- 원형 그래프 파이 갯수  -->     
+    <select id="totCircleGraph" resultType="int">
+	/*kr.happy.study.sales.dao.DdRevenueDao.DdRevenueModel*/
+      select count(*)
+        from (	
+		      select sum(sit.si_price * dor.do_nmt) as total
+		        from tb_order o
+		       	     inner join tb_dtlor dor on o.ord_no = dor.ord_no
+		       	     inner join tb_company cop on o.cop_no = cop.cop_no
+		       	     inner join tb_sitem sit on sit.si_cd = dor.si_cd
+		       	     inner join tb_bitem bt on bt.bi_cd = sit.bi_cd
+		         <where>
+			       <if test="(cilall != null) and (!cilall.equals(''))">
+			            and o.cop_no like (#{cilall})
+			       </if>  	         
+			       <if test="(from_date != null) and (!from_date.equals(''))">
+			            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+			       </if>
+			       <if test="(to_date != null) and (!to_date.equals(''))">
+			            and do_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+			       </if>
+			     </where>                
+		         group by cop.cop_nm
+		                , sit.si_nm
+             )ll
+    </select>    
+    
+    
 </mapper>

@@ -136,5 +136,33 @@ public class DdRevenueController {
 		return returnval;
 	}
 	
+	// CircleGraph 필요값들 DdRevenue 페이지로 주고 받기
+	@RequestMapping("CircleGraph.do")
+	@ResponseBody
+	public String CircleGraph(Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) throws Exception {
+		System.out.println("CircleGraph 불러오기 체크");
+		
+		logger.info("+ Start " + className + ".listnotice");
+		logger.info("   - paramMap : " + paramMap);
+		
+		
+		List<DdRevenueModel> listCircleGraph = ddRevenueService.listCircleGraph(paramMap);
+        
+		int totCircleGraph = ddRevenueService.totCircleGraph(paramMap);
+		
+		model.addAttribute("listCircleGraph", listCircleGraph);
+		model.addAttribute("totCircleGraph", totCircleGraph);
+		
+		logger.info("listCircleGraph : " + listCircleGraph);
+		logger.info("totCircleGraph : " + totCircleGraph);
+		
+		for(DdRevenueModel data: listDdRevenueModel){
+			System.out.println(data);
+		}
+		
+		return "sales/ddRevenueList";
+	}	
+	
 	
 }

@@ -15,4 +15,9 @@ public interface DdRevenueDao {
 	public List<DdRevenueModel> listcopItemOrder(Map<String, Object> paramMap) throws Exception;
 	
 	public List<DdRevenueModelChart> listCopItemOrderchart(Map<String, Object> paramMap) throws Exception;
+	
+	public List<DdRevenueModel> listCircleGraph(Map<String, Object> paramMap) throws Exception;
+	
+	public int totCircleGraph(Map<String, Object> paramMap) throws Exception;
+	
 }

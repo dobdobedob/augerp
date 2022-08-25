@@ -33,9 +33,6 @@
 		selectCombo("d", "dall", "all", "", "");
 		selectCombo("u", "uall", "all", "", "");
 		
-		
-		
-		
 		// productCombo(comtype, combo_name, type, code, selvalue)
 		// comtype     l : 대분류    m : 중분류    p : 제품정보   
 		//  combo_name   select id
@@ -180,78 +177,6 @@
 </script>
 
 
-<script>
-	function changeSelection(){
-	    
-	    // 선택한 option의 value
-	    var optionVal = $("#selectBoxTest option:selected").val();
-	    
-	    // 다른 방법
-	    // $("#selectBoxTest > option:selected").val();
-	    // $("#select[name=selectTest]").val();
-	    
-	    // 선택한 option의 text
-	    var optionTxt = $("#selectBoxTest option:selected").text();
-	    
-	    // 선택된 위치
-	    var index = $("#selectBoxTest option").index($("#selectBoxTest option:selected"));
-	    
-	    // option 갯수 구하기
-	     $("#selectBoxTest option").size();
-		
-	    // 선택된 option 전 후의 option 갯수
-		$("#selectBoxTest option:selected").prevAll().size();
-		$("#selectBoxTest option:selected").nextAll().size();
-		
-
-		// 추가, 교체
-		// ---------------------
-		// option 추가하기
-		$("#selectBoxTest").append("<option value='3'></option>");
-	
-		// 인덱스가 일치하는 option 교체
-		$("#selectBoxTest option:eq(1)").replaceWith("<option value='4'></option>");
-	
-	
-		// 선택
-		// ---------------------
-		// 지정된 인덱스 값으로 선택
-		$("#selectBoxTest option:eq(2)").attr("selected", "selected");
-	
-		// 텍스트 값으로 select
-		$("#selectBoxTest").val("3").attr("selected", "selected");
-	
-		// value 값으로 select
-		$("#selectBoxTest").val("2");
-		$("#selectBoxTest > option[@value=2]").attr("selected", "true");
-	
-	
-		// 삭제
-		// ---------------------
-		// 지정된 인덱스 값으로 삭제
-		$("selectBoxTest option:eq(0)").remove();
-	
-		// 첫 번째 삭제
-		$("selectBoxTest option:first").remove();
-	
-		// 마지막 삭제
-		$("selectBoxTest option:last").remove();		
-		
-	}
-	
-
-	
-	
-	
-	function changeSelection(){
-		var selectedElement = document.getElementById("selectBoxTest");
-	    
-	    // 선택한 option의 value, 텍스트
-	    var optionVal = selectedElement.options[selectedElement.selectedIndex].value;
-	    var optionTxt = selectedElement.options[selectedElement.selectedIndex].text;
-	}
-</script>
-
 </head>
 
 <body>
@@ -315,10 +240,9 @@
 								  <option id="username" name="username" >사원명</option>
 								 </select>
                            </td>
-                           			  <c:forEach items="${selectUserCombo}" var="list"> 
-					            		<td>${list.name}</td>
-					                  </c:forEach>                          
-                          
+                           
+                           <td width="40" height="25" style="font-size: 100%">
+                               <input type="text" style="width: 120px" id="search" name="search"></td>
                            <td width="40" height="25" style="font-size: 100%">월 조회</td>
                            <td width="40" height="25" style="font-size: 100%">
                             <input type="month" style="width: 120px" id="to_month" name="to_month"></td>
@@ -334,8 +258,8 @@
                            <td><select id="prodall" name="prodall" v-model="prodall">	</select></td> 
                         </tr>
                      </table>     
-
-            
+						
+						
 						<div class="divbmsaleplanList">
 							<table class="col">
 								<caption>caption</caption>

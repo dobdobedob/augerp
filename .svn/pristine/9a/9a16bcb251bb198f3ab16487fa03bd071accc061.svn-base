@@ -22,20 +22,6 @@
              inner join tb_sitem si on pl.si_cd = si.si_cd
              inner join tb_dept dep on u.dept_cd = dep.dept_cd
         <where>
-<!-- 	   	   <choose>
-				<when test="사번에 대한 값">
-					and cop.loginID like (#{검색 값})
-				</when>
-				<when test="달성률에 대한 값">
-					and pl.pln_ar <![CDATA[>=]]> (#{검색 값})
-				</when>
-				<when test="부서에 대한 값">
-					and u.dept_cd like (#{검색 값})
-				</when>			
-				<when test="이름에 대한 값">
-					and u.name like (#{검색 값})
-				</when>						
-	   	   </choose>  -->       
   	       <if test="(prolall != null) and (!prolall.equals(''))">
 	            and si.bi_cd like (#{prolall})
 	       </if>   
@@ -64,20 +50,6 @@
 	         inner join tb_userinfo u on pl.loginID = u.loginID
              inner join tb_sitem si on pl.si_cd = si.si_cd
         <where>
-<!-- 	   	   <choose>
-				<when test="사번에 대한 값">
-					and cop.loginID like (#{검색 값})
-				</when>
-				<when test="달성률에 대한 값">
-					and pl.pln_ar <![CDATA[>=]]> (#{검색 값})
-				</when>
-				<when test="부서에 대한 값">
-					and u.dept_cd like (#{검색 값})
-				</when>			
-				<when test="이름에 대한 값">
-					and u.name like (#{검색 값})
-				</when>						
-	   	   </choose>   -->        
   	       <if test="(prolall != null) and (!prolall.equals(''))">
 	            and si.bi_cd like (#{prolall})
 	       </if>   
@@ -95,30 +67,8 @@
 	       </if>		    
 	   </where> 
 	</select>
- 
-	<!-- 특정 기간별 회사, 제품, 총액 (최고액 순) -->
-	<!--<select id="이름" resultType="kr.happyjob.study.business.model.BmSalePlanModel">
-	/*kr.happy.study.business.dao.BmSalePlaneDao.BmSalePlanModel*/
-	  select cop.cop_nm
-           , sit.si_nm			
-           , sum(sit.si_price * dor.do_nmt) as total
-        from tb_order o
-             inner join tb_dtlor dor on o.ord_no = dor.ord_no
-             inner join tb_company cop on o.cop_no = cop.cop_no
-             inner join tb_sitem sit on sit.si_cd = dor.si_cd
-             inner join tb_bitem bt on bt.bi_cd = sit.bi_cd
-	   <where>
-	       <if test="(from_date != null) and (!from_date.equals(''))">
-	            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
-	       </if>
-	       <if test="(to_date != null) and (!to_date.equals(''))">
-	            and do_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
-	       </if>
-	   </where>		
-    group by cop.cop_nm
-           , sit.si_nm
-    order by total DESC;
-	</select>
-	 -->
+
+
+	
 </mapper>
 

@@ -53,4 +53,19 @@ public class DdRevenueServiceImple implements DdRevenueService {
 		
 		return listCopItemOrder;
 	};
+		
+	public List<DdRevenueModel> listCircleGraph(Map<String, Object> paramMap) throws Exception {
+		
+		List<DdRevenueModel> listCircleGraph = ddRevenueeDao.listCircleGraph(paramMap);
+		
+		return listCircleGraph;
+	};
+	
+	public int totCircleGraph(Map<String, Object> paramMap) throws Exception {
+		
+		int totCircleGraph = ddRevenueeDao.totCircleGraph(paramMap);
+		
+		return totCircleGraph;
+		
+	};		
 }

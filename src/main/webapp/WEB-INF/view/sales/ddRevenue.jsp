@@ -14,7 +14,7 @@
 <!-- google 차트 불러오기 -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <!-- 원형 그래프 -->
-<!-- <script type="text/javascript">
+<script type="text/javascript">
   google.charts.load('current', {'packages':['corechart']});
   google.charts.setOnLoadCallback(drawChart);
 
@@ -38,7 +38,7 @@
 
     chart.draw(data, options);
   }
-</script> -->
+</script>
 <!-- 원형 그래프 끝 -->
 
 
@@ -48,7 +48,7 @@
 
 	// 페이징 설정 
 	var pageSize = 6;		// 화면에 뿌려질 데이터 수
-	var pageBlock = 6;		// 블럭으로 잡히는 페이징 수 < 사실 무슨소린지 잘 모르겠 그러니까 블럭? 데이터 들어올 칸을 10칸 만들겠다는 소리?
+	var pageBlock = 10;		// 블럭으로 잡히는 페이징 수 < 사실 무슨소린지 잘 모르겠 그러니까 블럭? 데이터 들어올 칸을 10칸 만들겠다는 소리?
 	
 	// ready 시켜놓는 함수들		
 	$(document).ready(function () {
@@ -81,7 +81,7 @@
 		fRegisterButtonClickEvent();
 	});	
 	</script>
-	<!-- 그래프 시작 -->
+<!-- 	<!-- 그래프 시작 -->
 	<script type="text/javascript">
 	google.load('visualization', '1', {packages: ['corechart']});
 	</script>
@@ -188,7 +188,7 @@
 			
 			google.setOnLoadCallback(drawVisualization);
 	</script>
-	<!-- 그래프 끝 -->	
+	그래프 끝	 -->
 <script type="text/javascript">
 	function fRegisterButtonClickEvent() {
 		$('a[name=btn]').click(function(e) {
@@ -344,7 +344,7 @@
 					<table>
 						<tr>
 							<!-- 차트 -->
-							<th id="chart_div" style="width: 450px; height: 250px;"></th>
+							<!-- <th id="chart_div" style="width: 450px; height: 250px;"></th> -->
 							<!-- 원형 차트 -->
 							<th id="piechart" style="width: 450px; height: 250px;"></th>
 						</tr>	
