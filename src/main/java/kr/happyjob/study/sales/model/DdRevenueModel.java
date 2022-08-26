@@ -12,6 +12,8 @@ public class DdRevenueModel {
 	private String loginID;
     // 제품 대분류 명
 	private String bi_nm;
+	// 제품 코드
+	private int si_cd;
     // 제품 명
 	private String si_nm;
     // 제품 가격

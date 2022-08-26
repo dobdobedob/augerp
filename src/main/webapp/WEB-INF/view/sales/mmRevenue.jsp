@@ -157,9 +157,8 @@
 			
 		var param = {
 			cilall : $("#cilall").val()
-		   ,search : $("#search").val()
-	       ,year : $("#year").val()  
-	       ,to_date : $("#to_date").val() 
+	       ,from_month : $("#from_month").val()  
+	       ,to_month : $("#to_month").val()  
 	       ,curpage : curpage
 	       ,pageSize : pageSize
 			};
@@ -260,8 +259,10 @@
                            
                            <td width="50" height="25" style="font-size: 100%">기간 조회</td>
                             <td width="50" height="25" style="font-size: 100%">
-                            <input type="year" style="width: 120px" id="year" name="year"></td>
+                            <input type="month" style="width: 120px" id="from_date" name="from_month"></td>
                            <td width="50" height="25" style="font-size: 100%">
+                            <input type="month" style="width: 120px" id="to_date" name="to_month"></td>                           
+                           <td width="50" height="60" style="font-size: 100%">
                            <a href="" class="btnType blue" id="searchBtn" name="btn"><span>조  회</span></a></td> 
                             <!-- <input type="button" value="검  색  " id="searchBtn" name="btn" class="test_btn1" 
                               style="border-collapse: collapse; border: 0px gray solid; background-color: #50bcdf; width: 70px; color: white"/> -->

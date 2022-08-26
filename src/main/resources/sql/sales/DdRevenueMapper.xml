@@ -10,7 +10,8 @@
 	     , cop.cop_no								
 	     , cop.cop_nm									
 	     , cop.loginID								
-	     , bt.bi_nm										
+	     , bt.bi_nm	
+	     , sit.si_cd									
 	     , sit.si_nm									
 	     , sit.si_price										
 	     , dor.do_nmt										
@@ -23,7 +24,10 @@
         <where>
 	       <if test="(cilall != null) and (!cilall.equals(''))">
 	            and o.cop_no like (#{cilall})
-	       </if>        
+	       </if>
+ 	       <if test="(proall != null) and (!proall.equals(''))">
+	            and sit.si_cd like (#{proall})
+	       </if>	               
 	       <if test="(from_date != null) and (!from_date.equals(''))">
 	            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
 	       </if>
@@ -42,10 +46,14 @@
 	  select count(*)
 	    from tb_dtlor dor
 	         inner join tb_order o on o.ord_no = dor.ord_no
+	         inner join tb_sitem sit on sit.si_cd = dor.si_cd
         <where>
 	       <if test="(cilall != null) and (!cilall.equals(''))">
 	            and o.cop_no like (#{cilall})
-	       </if>         
+	       </if>
+ 	       <if test="(proall != null) and (!proall.equals(''))">
+	            and sit.si_cd like (#{proall})
+	       </if>	             
 	       <if test="(from_date != null) and (!from_date.equals(''))">
 	            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
 	       </if>
@@ -99,7 +107,10 @@
          <where>
 	       <if test="(cilall != null) and (!cilall.equals(''))">
 	            and o.cop_no like (#{cilall})
-	       </if>  	         
+	       </if>
+ 	       <if test="(proall != null) and (!proall.equals(''))">
+	            and sit.si_cd like (#{proall})
+	       </if>	         	         
 	       <if test="(from_date != null) and (!from_date.equals(''))">
 	            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
 	       </if>
@@ -125,7 +136,10 @@
          <where>
 	       <if test="(cilall != null) and (!cilall.equals(''))">
 	            and o.cop_no like (#{cilall})
-	       </if>  	         
+	       </if>
+ 	       <if test="(proall != null) and (!proall.equals(''))">
+	            and sit.si_cd like (#{proall})
+	       </if>	         	         
 	       <if test="(from_date != null) and (!from_date.equals(''))">
 	            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
 	       </if>
@@ -152,7 +166,10 @@
          <where>
 	       <if test="(cilall != null) and (!cilall.equals(''))">
 	            and o.cop_no like (#{cilall})
-	       </if>  	         
+	       </if>  
+ 	       <if test="(proall != null) and (!proall.equals(''))">
+	            and sit.si_cd like (#{proall})
+	       </if>	       	         
 	       <if test="(from_date != null) and (!from_date.equals(''))">
 	            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
 	       </if>
@@ -179,7 +196,10 @@
 		         <where>
 			       <if test="(cilall != null) and (!cilall.equals(''))">
 			            and o.cop_no like (#{cilall})
-			       </if>  	         
+			       </if>
+		 	       <if test="(proall != null) and (!proall.equals(''))">
+			            and sit.si_cd like (#{proall})
+			       </if>			         	         
 			       <if test="(from_date != null) and (!from_date.equals(''))">
 			            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
 			       </if>

@@ -68,13 +68,9 @@
 			selectComCombo("cli", "cilall", "all", "", "");
 			selectComCombo("pro", "proall", "all", "", "");
 			selectComCombo("dept", "deptall", "all", "", "");		
-	    
-		$("#prolall").change(function() {
-			productCombo("m", "promall", "all", $("#prolall").val(), "");
-            
-			//대분류를 바꾸면 중,제,부서가 지워져야지 새로운 조건이 보이기 때문에 remove를 사용한다.
-			$('#prodall').children('option').remove();
-		});
+		
+		// 제품 콤보박스
+		selectComCombo("pro", "proall", "all", "", "");			
 		
 		// 영업실적 리스트 불러오기
 		fn_ddrvenuelist();
@@ -218,6 +214,7 @@
 			
 		var param = {
 			cilall : $("#cilall").val()
+		   ,proall : $("#proall").val()
 	       ,from_date : $("#from_date").val()  
 	       ,to_date : $("#to_date").val() 
 	       ,curpage : curpage
@@ -255,6 +252,7 @@
 		
 		var param = {
 			cilall : $("#cilall").val()
+		   ,proall : $("#proall").val()
 	       ,from_date : $("#from_date").val()  
 	       ,to_date : $("#to_date").val() 
 	       ,curpage : curpage
@@ -318,7 +316,7 @@
 						</p>
 
 						<p class="conTitle">
-							<span>일별 매출 현황 </span> <span class="fr"> 
+							<span>일별 제품 판매 현황 </span> <span class="fr"> 
 								<c:set var="nullNum" value=""></c:set>
 							</span>
 						</p>
@@ -328,13 +326,14 @@
                         style="border-collapse: collapse; border: 1px #50bcdf;">
                         <tr style="border: 0px; border-color: blue" items="${listDdRevenueModel}" var="list" align="center">
                         	<!-- 사번, 달성률, 부서명, 사원명, 실적수량 확인 박스 -->
-                           <td width="40" height="25" style="font-size: 100%">거래처</td>
-                           
+                           <td width="60" height="25" style="font-size: 100%">거래처</td>
                            <td width="40" height="25" style="font-size: 100%">
-                           	<select id="cilall" name="cilall" v-model="cilall"></select>
-                           </td> 
+                           	<select id="cilall" name="cilall" v-model="cilall"></select></td> 
                            
-                           <td width="50" height="25" style="font-size: 100%">기간 조회</td>
+                           <td width="60" height="50" style="font-size: 100%">제품 명</td>
+                           <td><select id="proall" name="proall" v-model="proall">	</select></td> 
+                           
+                           <td width="80" height="25" style="font-size: 100%">기간 조회</td>
                             <td width="50" height="25" style="font-size: 100%">
                             <input type="date" style="width: 120px" id="from_date" name="from_date"></td>
                            <td width="50" height="25" style="font-size: 100%">

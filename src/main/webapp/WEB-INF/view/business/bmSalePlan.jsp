@@ -25,13 +25,13 @@
 		// 버튼 누를때 작동하는것들
 		fRegisterButtonClickEvent();
 		
-		$("#searchitemall").change(function() {
+/* 		$("#searchitemall").change(function() {
 			selectCombo("searchitem", "searchitemall", "all", "", "");
 		});
 		selectCombo("s", "sall", "all", "", "");
 		selectCombo("a", "aall", "all", "", "");
 		selectCombo("d", "dall", "all", "", "");
-		selectCombo("u", "uall", "all", "", "");
+		selectCombo("u", "uall", "all", "", ""); */
 		
 		
 		
@@ -98,6 +98,21 @@
 	    
 	}
 	
+	function fn_bmsaleplanListcallback(returndata,curpage) {	   
+	    console.log("fn_bmsaleplanlistcallback 작동함");
+	   
+	    $("#bmsaleplanList").empty().append(returndata);	   
+	    var totcnt = $("#totcnt").val();
+				
+		// 페이지 네비게이션 생성		
+		var paginationHtml = getPaginationHtml(curpage, totcnt, pageSize, pageBlock, 'fn_bmsaleplanlist');
+		console.log("paginationHtml : " + paginationHtml);
+		$("#pagingnavi").empty().append( paginationHtml );
+		
+		// 현재 페이지 설정
+		$("#currentPage").val(curpage);
+   }	
+/* 	
 	// 선택 콤보   selecttype : s = 사번, a = 달성률, d = 부서명, u = 사원명
 	// selectComCombo("s", combo_name, type, "",selvalue)
 	function selectCombo(selecttype, combo_name, type, searchkey,selvalue){
@@ -161,27 +176,13 @@
 		     error:function(request,status,error){ alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error); }
 		});  
 	};
-	
-	function fn_bmsaleplanListcallback(returndata,curpage) {	   
-	    console.log("fn_bmsaleplanlistcallback 작동함");
-	   
-	    $("#bmsaleplanList").empty().append(returndata);	   
-	    var totcnt = $("#totcnt").val();
-				
-		// 페이지 네비게이션 생성		
-		var paginationHtml = getPaginationHtml(curpage, totcnt, pageSize, pageBlock, 'fn_bmsaleplanlist');
-		console.log("paginationHtml : " + paginationHtml);
-		$("#pagingnavi").empty().append( paginationHtml );
-		
-		// 현재 페이지 설정
-		$("#currentPage").val(curpage);
-   }
 
+*/
 </script>
 
 
 <script>
-	function changeSelection(){
+/*	function changeSelection(){
 	    
 	    // 선택한 option의 value
 	    var optionVal = $("#selectBoxTest option:selected").val();
@@ -249,7 +250,7 @@
 	    // 선택한 option의 value, 텍스트
 	    var optionVal = selectedElement.options[selectedElement.selectedIndex].value;
 	    var optionTxt = selectedElement.options[selectedElement.selectedIndex].text;
-	}
+	} */
 </script>
 
 </head>
@@ -304,7 +305,7 @@
 					
 					<table width="100%" cellpadding="5" cellspacing="0" border="1"
                         style="border-collapse: collapse; border: 1px #50bcdf;">
-                        <tr style="border: 0px; border-color: blue" align="center" >
+                        <%-- <tr style="border: 0px; border-color: blue" align="center" >
                         	<!-- 사번, 달성률, 부서명, 사원명, 실적수량 확인 박스 -->
                            <td width="100" height="50" align="center" style="font-size: 100%">
                                  <select id="searchitem" name='searchitem'>
@@ -324,14 +325,16 @@
                             <input type="month" style="width: 120px" id="to_month" name="to_month"></td>
                            <td width="120" height="60" style="font-size: 120%">
                            <a href="" class="btnType blue" id="searchBtn" name="btn"><span>조  회</span></a></td> 
-                        </tr>
+                        </tr> --%>
                         <tr style="border: 0px; border-color: blue " align="center" >
                            <td align="center" width="120" height="50" style="font-size: 100%">제품 대분류</td>
 						   <td><select id="prolall" name="prolall"  v-model="prolall">	</select></td>
 						   <td width="120" height="50" style="font-size: 100%">제품 중분류</td>
 						   <td><select id="promall" name="promall" v-model="promall">	</select></td>
                            <td width="120" height="50" style="font-size: 100%">제품 명</td>
-                           <td><select id="prodall" name="prodall" v-model="prodall">	</select></td> 
+                           <td><select id="prodall" name="prodall" v-model="prodall">	</select></td>
+                           <td width="120" height="60" style="font-size: 120%">
+                           <a href="" class="btnType blue" id="searchBtn" name="btn"><span>조  회</span></a></td>                             
                         </tr>
                      </table>     
 
