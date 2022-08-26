@@ -6,46 +6,55 @@
 	<!-- 일별 매출 목록 조회 -->
 	<select id="listMmRevenueModel" resultType="kr.happyjob.study.sales.model.MmRevenueModel">
 	/*kr.happy.study.sales.dao.MmRevenueDao.MmRevenueModel*/
-    select a.do_date
-         , a.total
-      from (
-            select DATE_FORMAT(dor.do_date, '%Y-%m') as do_date					
-      	         , cop.cop_nm
-      	         , bt.bi_nm
-      	         , sit.si_price * dor.do_nmt as total
-      	      from tb_order o
-                   inner join tb_dtlor dor on o.ord_no = dor.ord_no
-      	           inner join tb_company cop on o.cop_no = cop.cop_no
-      	           inner join tb_sitem sit on sit.si_cd = dor.si_cd
-      	           inner join tb_bitem bt on bt.bi_cd = sit.bi_cd
-           )a  
-         <where>	       
+	select DATE_FORMAT(dor.do_date, '%Y-%m-%d') as do_date 	
+	     , cop.cop_no								
+	     , cop.cop_nm									
+	     , cop.loginID								
+	     , bt.bi_nm	
+	     , sit.si_cd									
+	     , sit.si_nm									
+	     , sit.si_price										
+	     , dor.do_nmt										
+	     , sit.si_price * dor.do_nmt as total				
+	  from tb_order o
+	       inner join tb_dtlor dor on o.ord_no = dor.ord_no
+	       inner join tb_company cop on o.cop_no = cop.cop_no
+	       inner join tb_sitem sit on sit.si_cd = dor.si_cd
+	       inner join tb_bitem bt on bt.bi_cd = sit.bi_cd
+        <where>
+	       <if test="(cilall != null) and (!cilall.equals(''))">
+	            and o.cop_no like (#{cilall})
+	       </if>        
 	       <if test="(from_month != null) and (!from_month.equals(''))">
 	            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_month}, '%Y-%m')  
 	       </if>
 	       <if test="(to_month != null) and (!to_month.equals(''))">
 	            and do_date <![CDATA[<=]]> STR_TO_DATE(#{to_month}, '%Y-%m')  
-	       </if>
-	     </where>	       
-  group by a.do_date
-  order by do_date DESC   
+	       </if>	       
+	   </where>
+  order by o.ord_no
+         , bt.bi_nm DESC	   
      limit #{pageIndex}, #{pageSize}
-    </select> 
+    </select>  
     
 	<!-- 전체 그룹갯수 카운트 -->
 	<select id="totMmRevenueModel" resultType="int">
 	/*kr.happy.study.sales.dao.MmRevenueDao.MmRevenueModel*/
-    select DATE_FORMAT(dor.do_date, '%Y-%m') as do_date
-      from tb_dtlor dor
-  group by DATE_FORMAT(dor.do_date, '%Y-%m')
-         <where>	       
-	       <if test="(from_month != null) and (!from_month.equals(''))">
-	            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_month}, '%Y-%m')  
+	  select count(*)
+	    from tb_dtlor dor
+	         inner join tb_order o on o.ord_no = dor.ord_no
+	         inner join tb_sitem sit on sit.si_cd = dor.si_cd
+        <where>
+	       <if test="(cilall != null) and (!cilall.equals(''))">
+	            and o.cop_no like (#{cilall})
 	       </if>
-	       <if test="(to_month != null) and (!to_month.equals(''))">
-	            and do_date <![CDATA[<=]]> STR_TO_DATE(#{to_month}, '%Y-%m')  
+	       <if test="(from_date != null) and (!from_date.equals(''))">
+	            and do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
 	       </if>
-	     </where>	         
-	</select>
+	       <if test="(to_date != null) and (!to_date.equals(''))">
+	            and do_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+	       </if>
+	   </where>   
+	</select> 
 
 </mapper>	
