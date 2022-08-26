@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happyjob.study.accounting.dao.AccTitleDao">
+
+	<!-- 계정과목 목록 조회 -->
+	<select id="listAccTitleModel" resultType="kr.happyjob.study.accounting.model.AccTitleModel">
+		/*kr.happy.study.accounting.dao.AccTitleDao.listAccTitleModel*/
+		select exa.acc_no
+      		  ,exa.acc_nm
+      		  ,exd.dac_no
+      		  ,exd.dac_nm
+			  ,if(exd.dac_cate = 1, "수익", "비용") As dac_cate
+	 		  ,exd.dac_con
+      		  ,exd.dac_stat
+		  from tb_expend_account exa
+		  inner join tb_expend_dtlaccount exd on exd.acc_no = exa.acc_no
+		 <where>
+		 	<if test="(acc_noT != null) and (!acc_noT.equals(''))">
+		            and exa.acc_no = #{acc_noT}
+		    </if>
+		    <if test="(dac_noT != null) and (!dac_noT.equals(''))">
+		            and exd.dac_no = #{dac_noT}
+		    </if>
+		    <if test="(I_S != null) and (!I_S.equals(''))">
+		            and exd.dac_cate = #{I_S}
+		    </if>
+		    <if test="(S_expendT != null) and (!S_expendT.equals(''))">
+		            and exd.dac_stat = #{S_expendT}
+		    </if>
+		 </where>
+		 order by exa.acc_no
+		   limit #{pageIndex}, #{pageSize}
+		
+	</select>
+	
+    <select id="totAccTitleModel" resultType="int">
+		/*kr.happy.study.accounting.dao.AccTitleDao.totAccTitleModel*/
+		  select count(exd.dac_no)
+		   from tb_expend_account exa
+		   		inner join tb_expend_dtlaccount exd on exd.acc_no = exa.acc_no
+		<where>
+		 	<if test="(acc_noT != null) and (!acc_noT.equals(''))">
+		            and exa.acc_no = #{acc_noT}
+		    </if>
+		    <if test="(dac_noT != null) and (!dac_noT.equals(''))">
+		            and exd.dac_no = #{dac_noT}
+		    </if>
+		    <if test="(I_S != null) and (!I_S.equals(''))">
+		            and exd.dac_cate = #{I_S}
+		    </if>
+		    <if test="(S_expendT != null) and (!S_expendT.equals(''))">
+		            and exd.dac_stat = #{S_expendT}
+		    </if>
+		 </where>
+	</select>		
+	
+	<select id="selectAccTitle" resultType="kr.happyjob.study.accounting.model.AccTitleModel">
+	      /*kr.happy.study.accounting.dao.AccTitleDao.selectAccTitle*/
+         select exa.acc_nm
+         	 ,exa.acc_no
+         	 ,exd.dac_no
+		     ,exd.dac_nm
+		     ,exd.dac_con
+		     ,exd.dac_stat
+			 ,exd.dac_cate
+		 from tb_expend_account exa
+		 inner join tb_expend_dtlaccount exd on exd.acc_no = exa.acc_no
+		 where exd.dac_no = #{dac_no}
+	</select>
+	<!-- 
+	<insert id="insertAccTitle">
+	   	  insert INTO tb_expend_account (acc_no, acc_nm) VALUES (#{acc_no},#{acc_nm}) 
+	</insert>
+	 -->
+	<insert id="insertdtlAccTitle">
+	   	  insert INTO tb_expend_dtlaccount 
+		   	  (acc_no
+		   	  ,dac_no
+		   	  ,dac_nm
+		   	  ,dac_cate
+		   	  ,dac_con
+		   	  ,dac_stat) 
+   	  		  VALUES 
+   	  		  (#{acc_no}
+   	  		  ,#{dac_no}
+   	  		  ,#{dac_nm}
+   	  		  ,#{dac_cate}
+   	  		  ,#{dac_con}
+   	  		  ,#{dac_stat}) 
+	</insert>
+	<update id="updateAccTitle">	
+			  update tb_expend_dtlaccount
+			      set 
+		              dac_nm = #{dac_nm}
+		              , dac_con = #{dac_con}
+		              , dac_stat = #{dac_stat}
+		              , dac_cate = #{dac_cate}
+			  where dac_no = #{dac_no}  
+			   
+			  <!-- update tb_expend_dtlaccount
+			      set 
+				 	 acc_no = #{acc_no}  
+				 	 , acc_no = #{acc_no}  
+				 	 
+		              , dac_no = #{dac_no}
+		              , dac_nm = #{dac_nm}
+		              , dac_con = #{dac_con}
+		              , dac_stat = #{dac_stat}
+		              , dac_cate = #{I_S}
+			  where dac_no = #{dac_no}  -->
+	</update>
+	
+	<!-- 대분류 수정 -->
+	<update id="changeB">
+		 	update tb_expend_account
+		 	   set acc_nm = #{acc_nm}
+		 	 where acc_no = #{acc_no_up}
+	</update>
+</mapper>

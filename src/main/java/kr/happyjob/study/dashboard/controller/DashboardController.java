@@ -72,11 +72,11 @@ public class DashboardController {
 //		paramMap.put("title", title);
 		
 		// 공지사항 목록 조회
-		List<NoticeModel> noticeList = noticeService.listNoticeModel(paramMap);
+		List<NoticeModel> noticeList = noticeService.noticeList(paramMap);
 		model.addAttribute("notice", noticeList);
 		
 		// 목록 수 추출해서 보내기
-		int noticeCnt = noticeService.totNoticeModel(paramMap);
+		int noticeCnt = noticeService.noticeCnt(paramMap);
 		
 	    model.addAttribute("noticeCnt", noticeCnt);
 	    model.addAttribute("pageSize", pageSize);
@@ -103,10 +103,10 @@ public class DashboardController {
 //			paramMap.put("title", title);
 		
 		// 공지사항 목록 조회
-		List<NoticeModel> noticeList = noticeService.listNoticeModel(paramMap);
+		List<NoticeModel> noticeList = noticeService.noticeList(paramMap);
 		
 		// 목록 수 추출해서 보내기
-		int noticeCnt = noticeService.totNoticeModel(paramMap);
+		int noticeCnt = noticeService.noticeCnt(paramMap);
 		
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap.put("notice", noticeList); // success 용어 담기 
@@ -134,7 +134,7 @@ public class DashboardController {
 		String result="";
 		
 		// 선택된 게시판 1건 조회 
-		NoticeModel detailNotice = noticeService.selectnotice(paramMap);
+		NoticeModel detailNotice = noticeService.noticeDetail(paramMap);
 		
 		if(detailNotice != null) {
 			result = "SUCCESS";  // 성공시 찍습니다. 

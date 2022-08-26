@@ -62,8 +62,6 @@ public class NoticeController {
 	@RequestMapping("listnotice.do")
 	public String listComnGrpCod(Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) throws Exception {
-		// 테스트
-		System.out.println("list 켜집니까 체크");
 		
 		logger.info("+ Start " + className + ".listnotice");
 		logger.info("   - paramMap : " + paramMap);

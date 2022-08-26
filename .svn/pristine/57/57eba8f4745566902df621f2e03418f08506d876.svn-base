@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+ 
+
+<mapper namespace="kr.happyjob.study.employee.dao.payAccMngDao">
+
+ 
+
+	<!-- 사원목록 조회 -->
+
+	<select id="listpayAccMngModel" resultType="kr.happyjob.study.employee.model.payAccMngModel">
+
+		/*kr.happy.study.employee.dao.payAccMngDao.listpayAccMngModel*/
+
+		  select  	 
+ 				   sa.sal_no
+ 			     , DATE_FORMAT(sa.sal_date, '%Y-%m') as sal_date
+			     , ui.dept_cd
+           		 , ui.job_cd
+           		 , sa.loginID
+           		 , ui.name
+ 			     , sa.sal_ad
+           		 , sa.sal_bt
+			     , sa.sal_kuk
+			     , sa.sal_kun
+			     , sa.sal_san
+			     , sa.sal_ko
+           		 , ex.exp_cost
+ 			     , sa.sal_price
+			  	 , IF(exh.exh_date is null,'미지급','지급') AS exh_Date
+
+		   from tb_salary sa
+		          inner join tb_userinfo ui on ui.loginID = sa.loginID
+              	  left join tb_expend ex on ex.loginID = sa.loginID
+              	  left join tb_exhistory exh on exh.loginID = sa.loginID
+             
+		  <where>
+		       <if test="(name != null) and (!name.equals(''))">
+					and ui.name Like CONCAT('%', #{name}, '%')
+		       </if>
+		       <if test="(salmonth != null) and (!salmonth.equals(''))">
+		            and sa.sal_date = STR_TO_DATE(#{salmonth}, '%Y-%m')  
+		       </if>
+		       <if test="(deptsearchKey != none) and (!deptsearchKey.equals('none'))">
+		            and ui.dept_cd = #{deptsearchKey}  
+		       </if>
+		       <if test="(jobsearchKey != none) and (!jobsearchKey.equals('none'))">
+		            and ui.job_cd = #{jobsearchKey}  
+		       </if>
+		       <if test="(catesearchKey != none) and (!catesearchKey.equals('none'))">
+		            and sa.sal_ad = #{catesearchKey}  
+		       </if>
+		       <if test="(paysearchKey != none) and (!paysearchKey.equals('none'))">
+		            and exh.exh_date = #{paysearchKey}  
+		       </if>
+		   </where> 
+		  order by sa.sal_date DESC
+		   limit #{pageIndex}, #{pageSize}
+
+	</select>
+
+    <select id="totpayAccMngModel" resultType="int">
+
+		/*kr.happy.study.employee.dao.payAccMngDao.totpayAccMngModel*/
+
+			  select count(sa.sal_no)
+		  		from tb_salary sa
+		   			inner join tb_userinfo ui on ui.loginID = sa.loginID
+              	  	left join tb_expend ex on ex.loginID = sa.loginID
+              	  	left join tb_exhistory exh on exh.loginID = sa.loginID
+		<where>
+		       <if test="(name != null) and (!name.equals(''))">
+					and ui.name Like CONCAT('%', #{name}, '%')
+		       </if>
+		       <if test="(salmonth != null) and (!salmonth.equals(''))">
+		            and sa.sal_date = STR_TO_DATE(#{salmonth}, '%Y-%m')  
+		       </if>
+		       <if test="(deptsearchKey != none) and (!deptsearchKey.equals('none'))">
+		            and ui.dept_cd = #{deptsearchKey}  
+		       </if>
+		       <if test="(jobsearchKey != none) and (!jobsearchKey.equals('none'))">
+		            and ui.job_cd = #{jobsearchKey}  
+		       </if>
+		       <if test="(catesearchKey != none) and (!catesearchKey.equals('none'))">
+		            and sa.sal_ad = #{catesearchKey}  
+		       </if>
+		       <if test="(paysearchKey != none) and (!paysearchKey.equals('none'))">
+		            and exh.exh_date = #{paysearchKey}  
+		       </if>
+		   </where> 
+	</select>		
+
+	<select id="selectpayAccMng" resultType="kr.happyjob.study.employee.model.payAccMngModel">
+
+	       select  	 
+ 				   sa.sal_no
+ 			     , DATE_FORMAT(sa.sal_date, '%Y-%m') as sal_date
+			     , ui.dept_cd
+           		 , ui.job_cd
+           		 , sa.loginID
+           		 , ui.name
+ 			     , sa.sal_ad
+           		 , sa.sal_bt
+			     , sa.sal_kuk
+			     , sa.sal_kun
+			     , sa.sal_san
+			     , sa.sal_ko
+           		 , ex.exp_cost
+ 			     , sa.sal_price
+			  	 , IF(exh.exh_date is null,'미지급','지급') AS exh_Date
+		   from tb_salary sa
+		          inner join tb_userinfo ui on ui.loginID = sa.loginID
+              	  left join tb_expend ex on ex.loginID = sa.loginID
+              	  left join tb_exhistory exh on exh.loginID = sa.loginID
+		  order by sa.sal_date DESC
+		  limit #{pageIndex}, #{pageSize}
+	</select>
+<select id="listpayAccMngModeldtl" resultType="kr.happyjob.study.employee.model.payAccMngModel">
+
+		/*kr.happy.study.employee.dao.payAccMngDao.listpayAccMngModel*/
+
+		  select  	 
+ 				   sa.sal_no
+ 			     , DATE_FORMAT(sa.sal_date, '%Y-%m') as sal_date
+			     , ui.dept_cd
+           		 , ui.job_cd
+           		 , sa.loginID
+           		 , ui.name
+ 			     , sa.sal_ad
+           		 , sa.sal_bt
+			     , sa.sal_kuk
+			     , sa.sal_kun
+			     , sa.sal_san
+			     , sa.sal_ko
+           		 , ex.exp_cost
+ 			     , sa.sal_price
+			  	 , IF(exh.exh_date is null,'미지급','지급') AS exh_Date
+
+		   from tb_salary sa
+		          inner join tb_userinfo ui on ui.loginID = sa.loginID
+              	  left join tb_expend ex on ex.loginID = sa.loginID
+              	  left join tb_exhistory exh on exh.loginID = sa.loginID
+           where sa.loginID = #{loginID}  
+		   order by sa.sal_date DESC
+		   limit #{pageIndexdtl}, #{pageSizedtl}
+
+	</select>
+	 <select id="countListComnDtlCoddtl" resultType="int">
+
+		/*kr.happy.study.employee.dao.payAccMngDao.totpayAccMngModel*/
+
+			  select count(*)
+
+		   from tb_salary
+		   where loginID = #{loginID}  
+	</select>		
+	
+	
+	<!-- 일괄처리 버튼클릭시 히스토리테이블에 insert  -->
+	<insert id="Allpayinsert">
+	    <selectKey resultType="int" keyProperty="exhistory" order="BEFORE">
+            select ifnull(max(exh_no),0) + 1 from tb_exhistory
+        </selectKey>			 
+		  insert into tb_exhistory
+		      (
+		           exh_no
+		         , dac_no
+		         , acc_no
+		         , exh_cate
+		         , loginID
+		         , exh_cd
+		         , exh_date
+		         , exh_amt
+		      ) values (
+		          #{exh_no}
+		         ,#{dac_no}
+		         ,#{acc_no}
+		         ,#{exh_cate}
+		         ,#{loginID}
+		         ,#{exh_date}
+		         ,#{ exh_cd}
+		         ,now()
+		         ,#{exh_amt}
+		         <if test="fileyn eq 'Y' .toString()" >
+		         ,(select ifnull(max(exh_no),0) from tb_exhistory )
+		         </if>
+		      )
+	</insert>
+		<!-- 회계전표테이블에 급여 insert  -->
+	<insert  id="accountinsert">
+		insert into tb_antsl values ant_spd
+	</insert>
+	
+	
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happyjob.study.system.dao.DeptMrgDao">
+
+	<!--부서코드 목록 조회 -->
+	<select id="listDeptMrgModel" resultType="kr.happyjob.study.system.model.DeptMrgModel">
+		/*kr.happy.study.system.dao.DeptMrgDao.listDeptMrgModel*/
+		  select dept_cd
+		  		,dept_name
+		   from tb_dept
+		   order by dept_cd
+		   limit #{pageIndex}, #{pageSize}
+		   <where>
+		       <if test="(title != null) and (!title.equals(''))">
+		            and dept_name like concat('%',#{title} ,'%')
+		       </if>
+		       </where>
+	</select>
+	
+	
+    <select id="totdeptMngModel" resultType="int">
+		/*kr.happy.study.system.dao.DeptMrgDao.totDeptMrgModel*/
+		  select count(*)
+		   from tb_dept
+	</select>		
+	
+	<select id="selectDeptMrg" resultType="kr.happyjob.study.system.model.DeptMrgModel">
+	      /*kr.happy.study.system.dao.DeptMrgDao.selectDeptMrg*/
+           select dept_cd
+		  		,dept_name
+		   from tb_dept
+		   where dept_cd = #{dept_cd}
+	</select>
+	
+	<insert id="insertDeptMrg">
+		  insert INTO tb_dept (dept_cd, dept_name) VALUES (#{dept_cd}, #{dept_name}) 
+	</insert>
+
+	<update id="updateDeptMrg">	
+			 update tb_dept
+			   set  dept_cd = #{dept_cd}
+	              , dept_name = #{dept_name}
+			  where dept_cd = #{dept_cdh}  
+	</update>
+	<delete id="deleteDeptMrg">	
+			 delete from  tb_dept
+			  where dept_cd = #{dept_cd}  
+			        or dept_name = #{dept_name}  
+	</delete>	
+	
+	
+</mapper>
