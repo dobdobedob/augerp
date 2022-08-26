@@ -1,0 +1,126 @@
+package kr.happyjob.study.business.service;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import kr.happyjob.study.business.dao.EstmanagementDao;
+import kr.happyjob.study.business.model.EstmanagementModel;
+
+
+
+@Service
+public class EstmanagementServiceImpl implements EstmanagementService {
+	
+   // Set logger
+   private final Logger logger = LogManager.getLogger(this.getClass());
+   
+   // Get class name for logger
+   private final String className = this.getClass().toString();
+   
+   @Autowired
+   EstmanagementDao estmanagementDao;
+
+@Override
+public List<EstmanagementModel> listEstmanagementModel(Map<String, Object> paramMap) throws Exception {
+	
+	List<EstmanagementModel> listEstmanagementModel = estmanagementDao.listEstmanagementModel(paramMap);
+	
+	
+	return listEstmanagementModel;
+
+}
+
+   
+public int totEstmanagementModel(Map<String, Object> paramMap) throws Exception {
+	
+	int totEstmanagementModel = estmanagementDao.totEstmanagementModel(paramMap);
+	
+	return totEstmanagementModel;
+}
+
+
+@Override
+public List<EstmanagementModel> selectestmanagement(Map<String, Object> paramMap) throws Exception {
+
+	List<EstmanagementModel> selectestmanagement = estmanagementDao.selectestmanagement(paramMap);
+	
+	return selectestmanagement;
+	
+}
+
+
+@Override
+public EstmanagementModel listcardTot(Map<String, Object> paramMap) throws Exception {
+	
+	EstmanagementModel cardTot = estmanagementDao.listcardTot(paramMap);
+	
+	return cardTot;
+}
+
+
+@Override
+public List<EstmanagementModel> estimatelist(Map<String, Object> paramMap) throws Exception {
+	
+	List<EstmanagementModel> estimatelist = estmanagementDao.estimatelist(paramMap);
+	return estimatelist;
+}
+
+
+@Override
+public int saveEmti(Map<String, Object> paramMap) throws Exception {
+	
+	int de_nmt = Integer.parseInt((String)paramMap.get("de_nmt"));
+	int de_price = Integer.parseInt((String)paramMap.get("de_price"));
+	int est_tot = de_nmt * de_price;
+	paramMap.put("est_tot", est_tot);
+
+	//목록에 추가해야되는대 견적서번호값을 유지하려면 null일때 	
+	
+	String est_no = (String) paramMap.get("est_no");
+	//견적서 테이블에 넣은 값
+	if(est_no == null || est_no == ""){
+		int save = estmanagementDao.saveEmti(paramMap);
+		
+	}
+	int est = estmanagementDao.selectEst(paramMap);
+	//견적서 상세테이블에 넣은 값
+	int savedtl = estmanagementDao.saveEmtidtl(paramMap);
+	
+     return est;
+}
+
+
+@Override
+public List<EstmanagementModel> selectEstNo(Map<String, Object> paramMap) throws Exception {
+	
+	List<EstmanagementModel> selectEstNo = estmanagementDao.selectEstNo(paramMap);
+	
+	return selectEstNo;
+	
+}
+
+
+@Override
+
+public int deleteEmti(Map<String, Object> paramMap) throws Exception {
+		int deleteEmti = estmanagementDao.deleteEmtis(paramMap);
+	return deleteEmti;
+}
+
+
+
+
+
+}
+

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happyjob.study.business.dao.EstmanagementDao">
+
+	<!-- 그룹코드 목록 조회 -->
+	
+	<select id="listEstmanagementModel" resultType="kr.happyjob.study.business.model.EstmanagementModel">
+		/*kr.happyjob.study.business.dao.EstmanagementDao.listEstmanagementModel*/
+			
+             	   select es.est_no
+             	   		 ,cp.cop_no
+                         ,cp.cop_nm
+                         ,cp.cop_ee
+                         ,cp.cop_phn
+                         ,DATE_FORMAT(ds.de_due, '%Y-%m-%d') as de_due
+                         ,DATE_FORMAT(ds.de_date, '%Y-%m-%d') as de_date
+                     from tb_estimate es
+                          inner join tb_company cp on cp.cop_no = es.cop_no
+                          inner join tb_dtlesti ds on ds.est_no = es.est_no
+                         <where>
+                   			<if test="(cilall != null) and (!cilall.equals(''))">
+				            	and cp.cop_no = #{cilall} 
+				       		</if>
+				       		<if test="(to_date != null) and (!to_date.equals(''))">
+					            and de_due <![CDATA[<=]]> STR_TO_DATE(#{form_date}, '%Y-%m-%d')  
+					       </if>	
+					       <if test="(to_date != null) and (!to_date.equals(''))">
+					            and de_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+					       </if>	
+                  	    </where>
+                         group by es.est_no
+                   		 limit #{pageIndex}, #{pageSize}
+    </select>
+	
+	<select id="totEstmanagementModel" resultType="int">
+		/*kr.happyjob.study.business.dao.EstmanagementDao.totEstmanagementModel*/
+
+	  select count(*) AS tot_cnt 
+  	    FROM (select es.est_no
+             	   		 ,cp.cop_no
+                         ,cp.cop_nm
+                         ,cp.cop_ee
+                         ,cp.cop_phn
+                         ,DATE_FORMAT(ds.de_due, '%Y-%m-%d') as de_due
+                         ,DATE_FORMAT(ds.de_date, '%Y-%m-%d') as de_date
+                     from tb_estimate es
+                          inner join tb_company cp on cp.cop_no = es.cop_no
+                          inner join tb_dtlesti ds on ds.est_no = es.est_no
+                         <where>
+                   			<if test="(cilall != null) and (!cilall.equals(''))">
+				            	and cp.cop_no = #{cilall} 
+				       		</if>
+				       		<if test="(to_date != null) and (!to_date.equals(''))">
+					            and de_due <![CDATA[<=]]> STR_TO_DATE(#{form_date}, '%Y-%m-%d')  
+					       </if>	
+					       <if test="(to_date != null) and (!to_date.equals(''))">
+					            and de_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+					       </if>	
+                  	    </where>
+                         group by es.est_no
+              )ll 
+	</select>	
+	
+	
+	
+	<select id="selectestmanagement" resultType="kr.happyjob.study.business.model.EstmanagementModel">
+		/*kr.happyjob.study.business.dao.EstmanagementDao.selectestmanagement*/
+		   
+		 			select es.est_no
+                           ,ds.de_nmt
+                           ,ds.de_price
+                           ,TRUNCATE(ds.de_price*0.9,0) as de_ten
+                           ,TRUNCATE((ds.de_price*0.01),0 ) as dtax
+                           ,TRUNCATE((ds.de_price*0.038),0) as dprice
+                           ,bi.bi_nm
+                           ,mi.mi_nm
+                           ,si.si_nm
+                           ,ds.si_cd
+                      from tb_estimate es
+                            inner join tb_dtlesti ds on ds.est_no = es.est_no
+                            inner join  tb_sitem si on si.si_cd = ds.si_cd
+                            inner join tb_mitem mi on mi.mi_cd = si.mi_cd
+                            inner join tb_bitem bi on bi.bi_cd = mi.bi_cd
+                where es.est_no = #{est_no}
+  				order by es.est_no DESC
+	</select>
+	
+	
+	<select id="listcardTot" resultType="kr.happyjob.study.business.model.EstmanagementModel">
+		/*kr.happyjob.study.business.dao.EstmanagementDao.listcardTot*/
+		   
+            select es.est_no
+      			  ,cop_cno
+	              ,cp.cop_nm
+	              ,cp.cop_addr
+	              ,cp.cop_ee
+	              ,cp.cop_phn
+				  ,DATE_FORMAT(ds.de_due, '%Y-%m-%d') as de_due
+	              ,mi.mi_nm
+	              ,det.est_tot
+	              ,ui.tel
+	              ,ui.name as writer
+          from tb_company cp
+               inner join tb_estimate es on es.cop_no = cp.cop_no
+               inner join tb_dtlesti ds on ds.est_no = es.est_no
+               inner join tb_sitem si on si.si_cd = ds.si_cd
+               inner join tb_mitem mi on mi.mi_cd = si.mi_cd
+               inner join ( select ds.est_no
+                         ,sum(ds.de_nmt*ds.de_price) est_tot
+                    from tb_dtlesti ds
+                    where ds.est_no
+                    group by ds.est_no) det on es.est_no = det.est_no
+                    inner join tb_userinfo ui on ui.loginID = cp.loginID
+         where es.est_no = #{est_no}
+        group by es.est_no
+	</select>
+	
+	
+	
+	<insert id="saveEmti">
+	    <selectKey resultType="int" keyProperty="est_no" order="BEFORE">
+            select ifnull(max(est_no),0) + 1 from tb_estimate
+        </selectKey>			 
+		  insert into tb_estimate
+		      (	   est_no
+		          ,cop_no
+		          ,est_tot
+		      ) values (
+		          #{est_no}
+		         ,#{cilallis}
+		         ,#{est_tot}
+		)
+	</insert>
+	
+	<!-- 견적서 상세테이블 insert -->
+	<insert id="saveEmtidtl">
+		<selectKey resultType="int" keyProperty="est_no" order="BEFORE">
+            select ifnull(max(est_no),0) from tb_estimate
+        </selectKey>
+        insert into tb_dtlesti
+        	(	est_no
+        	   ,si_cd
+        	   ,de_nmt
+        	   ,de_price
+        	   ,de_date
+        	   ,de_due
+        	) values (
+        	    #{est_no}
+        	   ,#{prodall}
+        	   ,#{de_nmt}
+        	   ,#{de_price}
+        	   ,now()
+        	   ,#{de_due}
+        	)
+	</insert>
+	
+	<!-- 견적서등록 목록조회 -->
+	<select id="estimatelist" resultType="kr.happyjob.study.business.model.EstmanagementModel">
+		select ds.est_no
+			  ,ds.si_cd
+			  ,cp.cop_nm 
+		      ,bi.bi_nm
+		      ,mi.mi_nm
+		      ,si.si_nm
+		      ,ds.de_nmt
+		      ,ds.de_price
+		      ,DATE_FORMAT(ds.de_due, '%Y-%m-%d') as de_due
+		  from tb_estimate es
+		       inner join tb_dtlesti ds on ds.est_no = es.est_no
+		       inner join tb_sitem si on ds.si_cd = si.si_cd 
+		       inner join tb_mitem mi on si.mi_cd = mi.mi_cd
+		       inner join tb_bitem bi on bi.bi_cd = si.bi_cd
+		       inner join tb_company cp on cp.cop_no = es.cop_no
+       where ds.est_no = #{esNum}
+		 order by ds.est_no desc
+         
+	</select>
+	
+	<select id="selectEstNo" resultType="kr.happyjob.study.business.model.EstmanagementModel">
+	   	select ds.est_no
+			  ,cp.cop_nm 
+		      ,bi.bi_nm
+		      ,mi.mi_nm
+		      ,si.si_nm
+		      ,ds.de_nmt
+		      ,ds.de_price
+		      ,DATE_FORMAT(ds.de_due, '%Y-%m-%d') as de_due
+		  from tb_estimate es
+		       inner join tb_dtlesti ds on ds.est_no = es.est_no
+		       inner join tb_sitem si on ds.si_cd = si.si_cd 
+		       inner join tb_mitem mi on si.mi_cd = mi.mi_cd
+		       inner join tb_bitem bi on bi.bi_cd = si.bi_cd
+		       inner join tb_company cp on cp.cop_no = es.cop_no
+		 where ds.est_no = #{est_no}
+		 order by ds.est_no desc
+		 
+         
+	</select>
+		
+	<select id="selectEst" resultType="int">
+		select ifnull(max(est_no),0) from tb_estimate
+	</select>
+	
+	
+	<delete id="deleteEmtis">
+		delete from tb_dtlesti
+         where si_cd = #{si_cd}
+           and est_no = #{est_no}
+	</delete>
+	
+</mapper>

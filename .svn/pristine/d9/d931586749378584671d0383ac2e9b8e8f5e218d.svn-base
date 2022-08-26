@@ -1,0 +1,14 @@
+package kr.happyjob.study.business.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.happyjob.study.business.model.BmSalePlanModel;
+
+public interface BmSalePlanService {
+	
+	public List<BmSalePlanModel> listBmSalePlaneModel(Map<String, Object> paramMap) throws Exception;
+
+	public int totBmSalePlanModel(Map<String, Object> paramMap) throws Exception;
+	public int saveBmi(Map<String, Object> paramMap) throws Exception;;
+}

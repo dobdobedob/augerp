@@ -1,0 +1,321 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title> 급여내역서  </title>
+
+<jsp:include page="/WEB-INF/view/common/common_include.jsp"></jsp:include>
+
+<style>
+	#tooltip{
+	position:realtive;
+	display:inline-block
+	}
+	#tooltip:hover #tooltip-content{
+		border:3px solid #000000;
+		margin-top:20px;
+		visibility:visible;
+	}
+	#tooltip #tooltip-content{
+		position:absolute;
+		visibility:hidden;
+		z-index:1;
+		
+	}
+</style>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		fRegisterButtonClickEvent();
+		$("#sal_kuk").text(0);
+		$("#sal_kun").text(0);
+		$("#sal_ko").text(0);
+		$("#sal_san").text(0);
+		$("#sal_bt").text(0);
+		$("#sal_ad").text(0);
+		$("#sal_price").text(0);
+		$("#exp_cost").text(0);
+
+	});
+	
+	function fRegisterButtonClickEvent() {
+		$('a[name=btn]').click(function(e) {
+			e.preventDefault();
+	
+			var btnId = $(this).attr('id');
+	
+			switch (btnId) {
+				case 'searchBtn' :
+					fn_search();
+					break;
+			}
+		});
+	}
+//===============================================================================
+	
+function fn_search(){
+	
+
+	var param = {
+			 to_month : $("#to_month").val()
+
+	};
+	
+	 var serchcallback = function(data) {
+		    fn_serchcallback(data) ;  
+		   
+	   }
+
+	callAjax("/employee/empPayAccreseach.do", "post", "json", true, param, serchcallback);
+}
+//===============================================================================   
+
+//===============================================================================  
+	function fn_serchcallback(data){
+		fn_initsearch(data.payList);
+		
+		
+	}
+	
+	function fn_initsearch(data){
+
+		
+		if(data == undefined){
+			$("#sal_kuk").text(0);
+			$("#sal_kun").text(0);
+			$("#sal_ko").text(0);
+			$("#sal_san").text(0);
+			$("#sal_bt").text(0);
+			$("#sal_ad").text(0);
+			$("#sal_price").text(0);
+			$("#exp_cost").text(0);
+		}else{
+			$("#sal_kuk").text(data.sal_kuk);
+			$("#sal_ko").text(data.sal_ko);
+			$("#sal_kun").text(data.sal_kun);
+			$("#sal_san").text(data.sal_san);
+			$("#sal_bt").text(data.sal_kuk);
+			$("#sal_ad").text(data.sal_ad);
+			$("#sal_price").text(data.sal_price);
+			$("#exp_cost").text(data.exp_cost);
+		}
+	}
+	
+</script>
+
+
+</head>
+<body>
+	<!-- ///////////////////// html 페이지  ///////////////////////////// -->
+
+<form id="myempPayAcc" action="" method="">
+	
+	<input type="hidden" id="currentPage" value="1">  <!-- 현재페이지는 처음에 항상 1로 설정하여 넘김  -->
+	<input type="hidden" name="action" id="action" value=""> 
+	<input type="hidden" name="selectannno" id="selectannno" value=""> 
+
+
+	<div id="wrap_area">
+
+		<h2 class="hidden">header 영역</h2>
+		<jsp:include page="/WEB-INF/view/common/header.jsp"></jsp:include>
+
+		<h2 class="hidden">컨텐츠 영역</h2>
+		<div id="container"><!-- 컨테이너 -->
+			<ul>
+
+				<li class="lnb">
+					<jsp:include page="/WEB-INF/view/common/lnbMenu.jsp"></jsp:include> 
+				</li>
+				
+				<li class="contents">
+					<!-- contents -->
+					<h3 class="hidden">contents 영역</h3> <!-- content -->
+					<div class="content">
+					
+						<p class="conTitle">
+							<span>급여내역서 </span>
+							 
+							<span class="fr"> 
+							<td width="110" height="60" style="font-size: 120%">기준년월</td>
+							<td width="110" height="60" style="font-size: 120%">&nbsp;&nbsp;
+							
+							<input type="month" style=" width: 130px" id="to_month" name="to_month"></td>
+                           <a href="" class="btnType blue" id="searchBtn" name="btn"><span>검  색</span></a>
+							</span>
+						</p>
+						
+					<!-- 부서정보 -->
+				<div style="background:gray;
+								height:10%;
+								margin-bottom:3%;
+								width:100%;">
+							 
+					<div style="float:left">
+						사번
+						<input type="text" style="width:45%" id="loginID" value="${loginId}" readonly>
+					</div>
+					<!-- 작성자 session에서 java에서 넘어온값 -->
+					
+					<div style="float:left">
+						이름
+						<input type="text" style="width:45%" id="writer" name="writer" value="${deptList.writer}" readonly>
+					</div>
+					
+					<div style="float:left">
+						직급
+						<input type="text" style="width:45%" id="job_cd" name="job_cd" value="${deptList.job_cd}" readonly>
+					</div> 
+					
+					<div style="float:left">
+			 			근무부서
+						<input type="text" style="width:45%" id="dept_name" name="dept_name" value="${deptList.dept_name}" readonly>
+					</div>  
+					
+					<div style="float:left">
+			 			근무연차
+						<input type="text" style="width:45%" id="dept_year" name="dept_year" value="${deptList.dept_year}" readonly>
+					</div>
+					
+				</div>
+	<!-- 부서정보 -------------------------------------------------------------------------------------------------------------->
+						
+			<div id="paylist"> 
+					<!-- 보험시작 -->
+					<div id="insurance"  style=" align-content:center;
+												border:2px solid black;
+												width:30%;
+												float:left;
+												margin-top:5%;">
+						<table class="col">
+								<caption>caption</caption>
+	
+		                            <colgroup >
+						                   <col width="30%">
+						                   <col width="50%">
+					                 </colgroup>
+								<thead></thead>
+								<tbody style="align-content:center;
+												text-align:center">
+									<tr>
+							              <th scope="col">공제항목</th>
+							              <th scope="col">금액(원)</th>
+							              <tr>
+								              <td>국민연금</td>
+								              <td id="sal_kuk" >${ payList.sal_kuk }</td>
+							             </tr>
+							             <tr>
+								              <td>건강보험료</td>
+								              <td id="sal_kun" >${ payList.sal_kun }</td>
+							             </tr>
+							             <tr>
+								              <td>고용보험</td>
+								              <td id="sal_ko" >${ payList.sal_ko }</td>
+							             </tr>
+							             <tr>
+								              <td>장기요양보험</td>
+								              <td id="sal_san" >${ payList.sal_san }</td>
+							             </tr>
+									</tr>
+								</tbody>
+							</table>
+					</div>
+					<!-- 보험끝 -->
+					
+					<!-- 툴팁시작 -->
+					<div  id="tooltip" style="margin:0;
+								display:flex;
+								padding:10px;
+								float:left;
+								height:10%;
+								margin-top:4%;">
+								
+						<div style="position:relative;
+									border:1px solid #000000;
+									border-radius:50%;
+									width:13px;
+									height:5%;
+									align-item:center;
+									justify-content:center;
+									float:left;
+									padding-left:6px;
+									box-shadow:2px 2px 5px #c5c5c5;">?
+						</div>
+						<div id="tooltip-content"
+							 style="margin-top:2%;"
+							 >		
+							<p>보험료율(근로자 부담)</p>
+							<p>- 국민연금 : 4.5%</p>
+							<p>- 건강보험 : 3.43%</p>
+							<p>- 고용보험 : 0.8%</p>
+							<p>- 장기요양보험 : 1.56%</p>
+						</div>	
+					</div>
+				
+					<!-- 툴팁 끝 -->
+					<!-- 페이시작 -->
+					<div id="pay" style=" align-content:center;
+										border:2px solid black;
+										width:50%;
+										float:right;
+										margin-top:5%;">
+										
+							<table class="col">
+								<caption>caption</caption>
+	
+		                            <colgroup>
+						                   <col width="50%">
+						                   <col width="50%">
+						                   <col height="20%">
+						                  
+					                 </colgroup>
+								<thead></thead>
+									
+									<tbody style="align-content:center;
+												text-align:center;">
+									<tr>
+							              <th scope="col">지급항목</th>
+							              <th scope="col">금액(원)</th>
+							              <tr>
+								              <td>기본급</td>
+								              <td id="sal_bt" >${ payList.sal_bt }</td>
+							             </tr>
+							             <tr>
+								              <td>지출결의 금액</td>
+								              <td id="exp_cost" >${ payList.exp_cost }</td>
+							             </tr>
+							             <tr>
+								              <td>실급여</td>
+								              <td id="sal_price">${ payList.sal_price }</td>
+							             </tr>
+							             <tr>
+								              <td>연봉</td>
+								              <td id="sal_ad" >${ payList.sal_ad }</td>
+							             </tr>
+									</tr>
+								</tbody>
+							</table>
+					</div>
+					<!-- 페이끝 -->
+</div>
+						
+				
+					</div> <!--// content -->
+
+					<h3 class="hidden">풋터 영역</h3>
+						<jsp:include page="/WEB-INF/view/common/footer.jsp"></jsp:include>
+				</li>
+			</ul>
+		</div><!-- 컨테이너 -->
+	</div>
+
+
+</form>
+
+</body>
+</html>

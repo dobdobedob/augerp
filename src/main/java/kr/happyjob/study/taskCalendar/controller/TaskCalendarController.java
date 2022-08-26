@@ -1,0 +1,97 @@
+package kr.happyjob.study.taskCalendar.controller;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.poi.util.SystemOutLogger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.happyjob.study.system.model.NoticeModel;
+import kr.happyjob.study.taskCalendar.model.TaskCalendarModel;
+import kr.happyjob.study.taskCalendar.service.TaskCalendarService;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+@Controller
+@RequestMapping("/taskCalendar/")
+public class TaskCalendarController {
+	// Set logger
+	private final Logger logger = LogManager.getLogger(this.getClass());
+	// Get class name for logger
+	private final String className = this.getClass().toString();
+	
+	@Autowired
+	TaskCalendarService TaskCalendarService;
+	
+	/* 근태현황조회 초기화면 */
+	@RequestMapping("TaskCalendar.do")
+	public String initEmpTaCalendar(Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) throws Exception {
+		logger.info("+ Start " + className + ".initEmpTaCalendar");
+		
+		return "taskCalendar/TaskCalendar";
+	}//근태현황조회 초기화면 끝
+	
+	/* 근태현황조회*/
+	@RequestMapping(value = "TaskCalendarList.do", method = RequestMethod.POST, produces = "application/text; charset=UTF-8")
+	@ResponseBody
+	public String TaskCalendarList(Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session){
+
+		logger.info("+ Start " + className + ".empTaList");
+		logger.info("   - paramMap : " + paramMap);
+		JSONObject object = new JSONObject();
+		JSONArray array = new JSONArray();
+		
+		List<TaskCalendarModel> TaskCalendarList = TaskCalendarService.TaskCalendarList(paramMap);
+		logger.info("   - empTaList : " + TaskCalendarList);
+		
+		for (TaskCalendarModel dto : TaskCalendarList) {
+			JSONObject TaskCalendarModel = new JSONObject();
+			TaskCalendarModel.put("vac_stat", dto.getVac_stat());
+			TaskCalendarModel.put("vac_cnt", dto.getVac_cnt());
+			TaskCalendarModel.put("vac_rdate", dto.getVac_rdate());
+			TaskCalendarModel.put("name", dto.getName());
+			TaskCalendarModel.put("vac_type", dto.getVac_type());
+			/* 원래는 add가 아닌 put이었다*/
+			array.add(TaskCalendarModel);
+		}
+		
+		object.put("TaskCalendarList", array);
+		
+		logger.info("+ End " + className + ".empTaList");
+		
+		return object.toString();
+	}
+	
+	/* 근태현황조회*/
+	@RequestMapping(value = "TaskCalendarDetailList.do")
+	@ResponseBody
+	public Map<String, Object>  TaskCalendarDetailList(Model model, @RequestParam Map<String, Object> paramMap, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session){
+		logger.info("+ Start " + className + ".empTaList");
+		logger.info("   - paramMap : " + paramMap);
+		
+		List<TaskCalendarModel> TaskCalendarDetailList = TaskCalendarService.TaskCalendarDetailList(paramMap);
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("TaskCalendarDetailList", TaskCalendarDetailList);
+		
+		return resultMap;
+	}
+}

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happyjob.study.employee.dao.IncManageDao">
+
+	<!-- 그룹코드 목록 조회 -->
+	<select id="listIncManageModel" resultType="kr.happyjob.study.employee.model.IncManageModel">
+		/*kr.happy.study.employee.dao.IncManageDao.listIncManageModel*/
+		select ui.loginID
+		       , ui.dept_cd
+	  	       , ui.name
+  	  	 	   , pl.pln_ar
+		       , ll.bill
+		       , pp.ict
+		       , DATE_FORMAT(now(), '%Y-%m') as tym
+		   
+        from tb_userinfo ui
+        /*수주 상세 테이블에서 수량x판매가격 수주 테이블 거래처 코드로 거래처 테이블 login id 불러서 묶어준다 기간 조건도 걸어야함*/
+                 left join (
+            	 	        select rd.ord_no
+          	   	             , sum(dd.bill) bill
+          		               , com.loginID
+                             , dd.do_date
+                          from tb_order rd
+                               left join(
+                                      	 select	ord_no
+                                      		    , do_nmt*do_price bill
+                                              , DATE_FORMAT(do_date, '%Y-%m') do_date   
+                                      	 from tb_dtlor do
+                                      	 <if test="(to_montha != null) and (!to_montha.equals(''))">
+		     	     		  			 where  do_date <![CDATA[=]]> STR_TO_DATE(concat(#{to_montha},'-01'),'%Y-%m-%d')
+		     	     		  			 </if>
+             	              		        ) dd on rd.ord_no = dd.ord_no
+             	                 left join tb_company com on com.cop_no = rd.cop_no
+                               
+                               group by com.loginID
+         		            ) ll on ll.loginId = ui.loginID 
+    		     left join (
+         		            select ui.loginID
+          	                     , DATE_FORMAT(Max(inc.ict_date), '%Y-%m') ict
+           	 		          from tb_userinfo ui
+          		              left join tb_incentive inc on inc.loginID = ui.loginID
+                  		     group by ui.loginID
+           			       ) pp on pp.loginID = ui.loginID 
+     		    left join  (
+                        select loginID
+                             , avg(ifnull(pl.pln_ar,0)) pln_ar
+                          from tb_planning pl 
+                          <if test="(to_monthb != null) and (!to_monthb.equals(''))">
+		     	     	  where pln_ddate <![CDATA[=]]> STR_TO_DATE(concat(#{to_monthb},'-01'),'%Y-%m-%d')
+		     	     	    
+		    	    	  </if>
+     		                ) pl on pl.loginID = ui.loginID
+            where ui.user_du = 'Y'
+		   			<if test="(sname != null) and (!sname.equals(''))">
+		            and ui.name like concat('%',#{sname} ,'%')
+			       	</if>
+			  	    
+		  		    <if test="(deptall != null) and (!deptall.equals(''))">
+		            and ui.dept_cd <![CDATA[=]]> #{deptall}  
+		      		</if>		    
+					<if test="(sloginID != null) and (!sloginID.equals(''))">
+		            and ui.loginID like concat('%',#{sloginID} ,'%')
+		      		</if>
+		   
+		   limit #{pageIndex}, #{pageSize}
+	</select>
+	 <select id="listIncManageiModel" resultType="kr.happyjob.study.employee.model.IncManageModel">
+			select inc.ict_no
+				 , inc.loginID
+				 , inc.ict_bo
+				 , inc.ict_price
+				 , ui.name
+				 , DATE_FORMAT(inc.ict_date, '%Y-%m-%d') ict_date
+			  from tb_incentive inc
+			  		inner join tb_userinfo ui on ui.loginID = inc.loginID 
+			  <where>
+			  <if test="(sloginID != null) and (!sloginID.equals(''))">
+			  	and inc.loginID = #{sloginID} 
+			  </if>
+			  <if test="(from_imonth != null) and (!from_imonth.equals(''))">
+		            and ict_date <![CDATA[>=]]> STR_TO_DATE(concat(#{from_imonth},'-01'), '%Y-%m-%d')  
+		       </if>
+		       <if test="(to_imonth != null) and (!to_imonth.equals(''))">
+		            and ict_date <![CDATA[<=]]> STR_TO_DATE(concat(#{to_imonth},'-01'), '%Y-%m-%d')  
+		       </if>
+		       </where>
+	
+	</select>
+    <select id="totIncManageModel" resultType="int">
+		/*kr.happy.study.system.dao.IncManageDao.totIncManageModel*/
+		  select count(*)
+		   from tb_userinfo ui
+		  where ui.user_du = 'Y'
+		       <if test="(dept_cd != null) and (!dept_cd.equals(''))">
+		            and ui.dept_cd = #{dept_cd}
+		       </if>
+		       <if test="(loginID != null) and (!loginID.equals(''))">
+		            and ui.loginID like concat('%',#{loginID} ,'%')
+		       </if>
+	</select>		
+	
+	<select id="totIncManageiModel" resultType="int">
+		/*kr.happy.study.system.dao.IncManageDao.totIncManageModel*/
+		  select count(*)
+		   from tb_incentive inc
+		   		<where>
+		   		<if test="(loginID != null) and (!loginID.equals(''))">
+		   		 	and inc.loginID = #{loginID}
+		         </if>
+		       <if test="(from_date != null) and (!from_date.equals(''))">
+		            and inc.ict_date <![CDATA[>=]]> STR_TO_DATE(concat(#{from_imonth},'-01') '%Y-%m-%d')  
+		       </if>
+		       <if test="(to_date != null) and (!to_date.equals(''))">
+		            and inc.ict_date <![CDATA[<=]]> STR_TO_DATE(concat(#{to_imonth},'-01') '%Y-%m-%d')  
+		       </if>
+		       </where>
+	</select>
+	
+	<select id="todayDate" resultType="String">
+		/*kr.happy.study.system.dao.IncManageDao.totIncManageModel*/
+		  select  DATE_FORMAT(now(), '%Y-%m') as tym
+		  	   ,  DATE_FORMAT(now(), '%Y-%m-%d') as tymd
+		  	   
+	</select>
+	<select id="todayDD" resultType="String">
+		/*kr.happy.study.system.dao.IncManageDao.totIncManageModel*/
+		  select  DATE_FORMAT(now(), '%Y-%m-%d') as DD
+		  	   
+	</select>
+	<select id="selectIncManage" resultType="kr.happyjob.study.employee.model.IncManageModel">
+		/*kr.happy.study.system.dao.IncManageDao.IncManageModel*/
+		  select dept_cd
+		  	   , sal_ad
+		  	   , name
+		  	   , loginID
+		  	   , year(CURDATE())- year(user_date) career
+		  	   , CURDATE() curdate
+		  	from tb_userinfo
+		  	      where loginID = #{loginID}
+		  
+		  
+	</select>
+	<insert id="insertIncManage">
+	    <selectKey resultType="int" keyProperty="ict_no" order="BEFORE">
+            select ifnull(max(ict_no),0) + 1 from tb_incentive
+        </selectKey>			 
+		  insert into tb_incentive
+		      (
+		           ict_no
+		         , loginID
+		         , ict_bo
+		         , ict_price
+		         , ict_date
+		      ) values (
+		          #{ict_no}
+		         ,#{loginID}
+		         ,#{ict_bo}
+		         ,#{ict_price}
+		         ,now()
+		      )
+	</insert>
+	
+	
+</mapper>

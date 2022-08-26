@@ -1,0 +1,397 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title> 영업 실적 조회  </title>
+
+<jsp:include page="/WEB-INF/view/common/common_include.jsp"></jsp:include>
+
+<script type="text/javascript">
+
+	// 페이징 설정
+	var pageSize = 10;		// 화면에 뿌려질 데이터 수
+	var pageBlock = 10;		// 블럭으로 잡히는 페이징 수 < 사실 무슨소린지 잘 모르겠 그러니까 블럭? 데이터 들어올 칸을 10칸 만들겠다는 소리?
+	console.log("bmsal eplan 작동함");
+	
+	// fn(fuction) 이거이거 쓸꺼니까 대기시켜놔라
+	$(document).ready(function () {
+		
+		// 영업실적 리스트 불러오기
+		fn_bmsaleplanlist();
+		// 버튼 누를때 작동하는것들
+		fRegisterButtonClickEvent();
+		
+/* 		$("#searchitemall").change(function() {
+			selectCombo("searchitem", "searchitemall", "all", "", "");
+		});
+		selectCombo("s", "sall", "all", "", "");
+		selectCombo("a", "aall", "all", "", "");
+		selectCombo("d", "dall", "all", "", "");
+		selectCombo("u", "uall", "all", "", ""); */
+		
+		
+		
+		
+		// productCombo(comtype, combo_name, type, code, selvalue)
+		// comtype     l : 대분류    m : 중분류    p : 제품정보   
+		//  combo_name   select id
+		//  type    sel : 선택   all : 전체
+		//  code   대분류 인경우 ""    중분류인경우 대분류 코드      제품정보인경우 중분류 코드 
+		$("#prolall").change(function() {
+			productCombo("m", "promall", "all", $("#prolall").val(), "");
+            
+			//대분류를 바꾸면 중,제,부서가 지워져야지 새로운 조건이 보이기 때문에 remove를 사용한다.
+			$('#prodall').children('option').remove();
+		});
+
+		$("#promall").change(function() {
+			productCombo("p", "prodall", "all", $("#promall").val(), "");
+		});
+		productCombo("l", "prolall", "all", "", "");
+	});
+
+	
+	function fRegisterButtonClickEvent() {
+		$('a[name=btn]').click(function(e) {
+			e.preventDefault();
+
+			var btnId = $(this).attr('id');
+
+			switch (btnId) {
+				case 'searchBtn' :
+					fn_bmsaleplanlist();
+					console.log("searchBtn 작동함");
+					break;
+			}
+		});
+	}
+	
+	function fn_bmsaleplanlist(curpage) {
+		
+		console.log("bmsaleplanlist 작동함");
+		curpage = curpage || 1;
+			
+		var param = {
+			searchitem : $("#searchitem").val()
+		   ,search : $("#search").val()
+		   ,usercode : $("#usercode").val()			// 사번, 달성률(입력 값 이상), 부서명, 사원명, 목표수량 < 목표 수량 이상하니까 빼자 pln_ar
+		   ,achievementrate : $("#achievementrate").val()
+		   ,deptname : $("#deptname").val()
+		   ,username : $("#username").val()
+		   ,prolall : $("#prolall").val()
+		   ,promall : $("#promall").val()
+		   ,prodall : $("#prodall").val()
+	       ,to_month : $("#to_month").val()  
+	       ,curpage : curpage
+	       ,pageSize : pageSize
+			};
+		   
+	    var bmsaleplanListcallback = function(returndata) {
+	        fn_bmsaleplanListcallback(returndata,curpage) ;  
+	        }
+
+	    callAjax("/business/listBmSalePlaneModel.do", "post", "text", true, param, bmsaleplanListcallback);
+	    
+	}
+	
+	function fn_bmsaleplanListcallback(returndata,curpage) {	   
+	    console.log("fn_bmsaleplanlistcallback 작동함");
+	   
+	    $("#bmsaleplanList").empty().append(returndata);	   
+	    var totcnt = $("#totcnt").val();
+				
+		// 페이지 네비게이션 생성		
+		var paginationHtml = getPaginationHtml(curpage, totcnt, pageSize, pageBlock, 'fn_bmsaleplanlist');
+		console.log("paginationHtml : " + paginationHtml);
+		$("#pagingnavi").empty().append( paginationHtml );
+		
+		// 현재 페이지 설정
+		$("#currentPage").val(curpage);
+   }	
+/* 	
+	// 선택 콤보   selecttype : s = 사번, a = 달성률, d = 부서명, u = 사원명
+	// selectComCombo("s", combo_name, type, "",selvalue)
+	function selectCombo(selecttype, combo_name, type, searchkey,selvalue){
+	
+		console.log("selectCombo Start !!!!!!!!!!!!!! ");
+		
+		var selectbox = document.getElementById(combo_name);
+
+		var data = {
+				"selecttype" : selecttype
+			   ,"searchkey" : searchkey
+			};	
+		
+		$(selectbox).find("option").remove();
+	  		
+		$.ajax({ 
+		     type: "POST",  
+		     url: "/business/selectCombo.do", 
+		     dataType: "json",  
+		     data : data,
+		     success: function(data)
+		     { 				
+		    	 
+			     var json_obj = $.parseJSON(JSON.stringify(data));//parse JSON 
+			     var jsonstr = json_obj.list;
+			     console.log("jsonstr : " + jsonstr);
+			     
+			     var jsonstr_obj = $.parseJSON(JSON.stringify(jsonstr));//parse JSON 
+			     var listLen = jsonstr_obj.length;
+
+		    	 if(type == "all") {
+		    	    $(selectbox).append("<option value=''>전체</option>");
+		    	 }		     
+			     
+		    	 if(type == "sel") {
+			    	$(selectbox).append("<option value=''>선택</option>");
+			     }
+		    	 console.log(" selvalue : " + selvalue);
+		         for(var i=0; i<listLen; i++)
+		         { 		
+		        	 var eleString = JSON.stringify(jsonstr_obj[i]);
+		        	 var item_obj = $.parseJSON(eleString);//parse JSON
+	            
+		        	 if(selvalue != null && selvalue != null && selvalue != "") {
+		        		 if(selvalue == item_obj.dtl_cod) {
+		        			 console.log(" item_obj.cd : " + item_obj.cd);
+		        			 
+		        			 $(selectbox).append("<option value='"+ item_obj.cd + "' selected>" + item_obj.name + "</option>");
+		        		 } else {
+		        			 $(selectbox).append("<option value='"+ item_obj.cd + "'>" + item_obj.name + "</option>");
+		        		 }
+		        	 } else {
+		        		 $(selectbox).append("<option value='"+ item_obj.cd + "'>" + item_obj.name + "</option>");
+		        	 }
+		        	 
+		        	 
+		         } 
+		         
+		         $(selectbox).val(selvalue);
+		     },
+		     error:function(request,status,error){ alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error); }
+		});  
+	};
+
+*/
+</script>
+
+
+<script>
+/*	function changeSelection(){
+	    
+	    // 선택한 option의 value
+	    var optionVal = $("#selectBoxTest option:selected").val();
+	    
+	    // 다른 방법
+	    // $("#selectBoxTest > option:selected").val();
+	    // $("#select[name=selectTest]").val();
+	    
+	    // 선택한 option의 text
+	    var optionTxt = $("#selectBoxTest option:selected").text();
+	    
+	    // 선택된 위치
+	    var index = $("#selectBoxTest option").index($("#selectBoxTest option:selected"));
+	    
+	    // option 갯수 구하기
+	     $("#selectBoxTest option").size();
+		
+	    // 선택된 option 전 후의 option 갯수
+		$("#selectBoxTest option:selected").prevAll().size();
+		$("#selectBoxTest option:selected").nextAll().size();
+		
+
+		// 추가, 교체
+		// ---------------------
+		// option 추가하기
+		$("#selectBoxTest").append("<option value='3'></option>");
+	
+		// 인덱스가 일치하는 option 교체
+		$("#selectBoxTest option:eq(1)").replaceWith("<option value='4'></option>");
+	
+	
+		// 선택
+		// ---------------------
+		// 지정된 인덱스 값으로 선택
+		$("#selectBoxTest option:eq(2)").attr("selected", "selected");
+	
+		// 텍스트 값으로 select
+		$("#selectBoxTest").val("3").attr("selected", "selected");
+	
+		// value 값으로 select
+		$("#selectBoxTest").val("2");
+		$("#selectBoxTest > option[@value=2]").attr("selected", "true");
+	
+	
+		// 삭제
+		// ---------------------
+		// 지정된 인덱스 값으로 삭제
+		$("selectBoxTest option:eq(0)").remove();
+	
+		// 첫 번째 삭제
+		$("selectBoxTest option:first").remove();
+	
+		// 마지막 삭제
+		$("selectBoxTest option:last").remove();		
+		
+	}
+	
+
+	
+	
+	
+	function changeSelection(){
+		var selectedElement = document.getElementById("selectBoxTest");
+	    
+	    // 선택한 option의 value, 텍스트
+	    var optionVal = selectedElement.options[selectedElement.selectedIndex].value;
+	    var optionTxt = selectedElement.options[selectedElement.selectedIndex].text;
+	} */
+</script>
+
+</head>
+
+<body>
+	<!-- ///////////////////// html 페이지  ///////////////////////////// -->
+
+<form id="myNotice" action="" method="">
+	
+	<input type="hidden" id="currentPage" value="1">  <!-- 현재페이지는 처음에 항상 1로 설정하여 넘김  -->
+	<input type="hidden" name="action" id="action" value=""> 
+	<input type="hidden" name="selectannno" id="selectannno" value=""> 
+    <input type="hidden" id="pln_no"  name="pln_no"  value="">
+	<div id="wrap_area">
+
+		<h2 class="hidden">header 영역</h2>
+		<jsp:include page="/WEB-INF/view/common/header.jsp"></jsp:include>
+
+		<h2 class="hidden">컨텐츠 영역</h2>
+		<div id="container">
+			<ul>
+				<li class="lnb">
+					<!-- lnb 영역 --> 
+					<jsp:include page="/WEB-INF/view/common/lnbMenu.jsp"></jsp:include> <!--// lnb 영역 -->
+				</li>
+				<li class="contents">
+					<!-- contents -->
+					<h3 class="hidden">contents 영역</h3> <!-- content -->
+					<div class="content">
+
+						<p class="Location">
+							<a href="#" class="btn_set home">메인으로</a> 
+							<a href="#" class="btn_nav bold">시스템 관리</a> 
+								<span class="btn_nav bold">공지 사항</span> 
+								<a href="#" class="btn_set refresh">새로고침</a>
+						</p>
+
+						<p class="conTitle">
+							<span>영업 실적 조회 </span> <span class="fr"> 
+								<c:set var="nullNum" value=""></c:set>
+							</span>
+						</p>
+						
+					<!--검색창  -->
+					
+					<!-- <tbody>
+	                        <tr style="border: 10px; border-color: blue">
+	                           <td width="40" height="25" style="font-size: 100%">부서</td>
+	                           <td><select id="deptall" name="deptall" v-model="deptall">	</select></td>        
+	                        </tr>
+					</tbody> -->
+					
+					<table width="100%" cellpadding="5" cellspacing="0" border="1"
+                        style="border-collapse: collapse; border: 1px #50bcdf;">
+                        <%-- <tr style="border: 0px; border-color: blue" align="center" >
+                        	<!-- 사번, 달성률, 부서명, 사원명, 실적수량 확인 박스 -->
+                           <td width="100" height="50" align="center" style="font-size: 100%">
+                                 <select id="searchitem" name='searchitem'>
+								  <option value='' selected>-- 선택 --</option>
+								  <option id="usercode" name="usercode" >사번</option>
+								  <option id="achievementrate" name="achievementrate" >달성률</option>
+								  <option id="deptname" name="deptname" >부서명</option>
+								  <option id="username" name="username" >사원명</option>
+								 </select>
+                           </td>
+                           			  <c:forEach items="${selectUserCombo}" var="list"> 
+					            		<td>${list.name}</td>
+					                  </c:forEach>                          
+                          
+                           <td width="40" height="25" style="font-size: 100%">월 조회</td>
+                           <td width="40" height="25" style="font-size: 100%">
+                            <input type="month" style="width: 120px" id="to_month" name="to_month"></td>
+                           <td width="120" height="60" style="font-size: 120%">
+                           <a href="" class="btnType blue" id="searchBtn" name="btn"><span>조  회</span></a></td> 
+                        </tr> --%>
+                        <tr style="border: 0px; border-color: blue " align="center" >
+                           <td align="center" width="120" height="50" style="font-size: 100%">제품 대분류</td>
+						   <td><select id="prolall" name="prolall"  v-model="prolall">	</select></td>
+						   <td width="120" height="50" style="font-size: 100%">제품 중분류</td>
+						   <td><select id="promall" name="promall" v-model="promall">	</select></td>
+                           <td width="120" height="50" style="font-size: 100%">제품 명</td>
+                           <td><select id="prodall" name="prodall" v-model="prodall">	</select></td>
+                           <td width="120" height="60" style="font-size: 120%">
+                           <a href="" class="btnType blue" id="searchBtn" name="btn"><span>조  회</span></a></td>                             
+                        </tr>
+                     </table>     
+
+            
+						<div class="divbmsaleplanList">
+							<table class="col">
+								<caption>caption</caption>
+	
+		                            <colgroup>
+						                   <col width="8%">
+						                   <col width="9%">
+						                   <col width="6%">
+						                   <col width="11%">
+						                   <col width="8%">
+						                   <col width="18%">
+						                   <col width="10%">
+						                   <col width="10%">
+						                   <col width="10%">
+						                   <col width="10%">
+					                 </colgroup>
+								<thead>
+									<tr>
+
+							              <th scope="col">사번</th>
+							              <th scope="col">부서명</th>
+							              <th scope="col">이름</th>
+							              <th scope="col">월 목표</th>
+							              <th scope="col">제품 코드</th>
+							              <th scope="col">제품 이름</th>
+							              <th scope="col">목표 수량</th>
+							              <th scope="col">실적 수량</th>
+							              <th scope="col">달성률</th>
+							              <th scope="col">비고</th>
+									</tr>
+								</thead>
+								<tbody id="bmsaleplanList"></tbody>
+							</table>
+							
+							<!-- 페이징 처리  -->
+							<div class="paging_area" id="pagingnavi">
+							</div>
+											
+						</div>
+
+		
+					</div> <!--// content -->
+
+					<h3 class="hidden">풋터 영역</h3>
+						<jsp:include page="/WEB-INF/view/common/footer.jsp"></jsp:include>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+
+
+</form>
+
+</body>
+</html>
