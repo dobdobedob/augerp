@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.happyjob.study.employee.dao.EmpPromotionDao">
+	
+	<!-- 승진 내역 리스트 -->
+	<select id="empPromotionModalList" resultType="kr.happyjob.study.employee.model.EmpPromotion">
+		select hr.hr_no
+			  ,hr.loginID
+			  ,hr.dept_cd
+			  ,hr.job_cd
+			  ,ifnull(Date_format(hr.hr_date,"%Y-%m-%d"),'') as hr_date
+			  ,dp.dept_name
+			  ,dc.detail_name
+			  ,ui.name
+		  from tb_human_resources hr
+		  	   left outer join tb_dept dp on dp.dept_cd = hr.dept_cd
+           	   left outer join tb_detail_code dc on dc.detail_code = hr.job_cd
+           	   left outer join tb_userinfo ui on ui.loginID = hr.loginID
+     	 where dc.group_code = 'POScd' 	  
+     	 <if test="(selectDepart != null) and (!selectDepart.equals(''))">
+		       and hr.dept_cd = #{selectDepart} 
+		 </if> 
+		 <if test="(search_job_cd!= null) and (!search_job_cd.equals(''))">
+		       and hr.job_cd = #{search_job_cd} 
+		 </if> 
+		 <if test="(selectOP eq 'search_loginID'.toString()) or (selectOP.equals('search_loginID'))">
+	       	   and hr.loginID like concat('%',#{search_input} ,'%')
+	     </if>
+	     <if test="(selectOP eq 'search_name'.toString()) or (selectOP.equals('search_name'))">
+	           and ui.name like concat('%',#{search_input} ,'%')
+	     </if>
+	     <if test="(from_date != null) and (!from_date.equals(''))">
+	           and hr_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+	     </if>
+	     <if test="(to_date != null) and (!to_date.equals(''))">
+	           and hr_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+	     </if>
+	      order by hr_no DESC
+		   limit #{pageIndex}, #{pageSize}
+	</select>
+	
+	<!-- 승진내역 리스트 갯수 -->
+	<select id="totEmpPromotionModel" resultType="int">
+		select count(hr.hr_no)
+		  from tb_human_resources hr
+		  	   left outer join tb_dept dp on dp.dept_cd = hr.dept_cd
+           	   left outer join tb_detail_code dc on dc.detail_code = hr.job_cd
+           	   left outer join tb_userinfo ui on ui.loginID = hr.loginID
+     	 where dc.group_code = 'POScd' 	 
+		 <if test="(selectDepart != null) and (!selectDepart.equals(''))">
+		       and hr.dept_cd = #{selectDepart} 
+		 </if> 
+		 <if test="(search_job_cd!= null) and (!search_job_cd.equals(''))">
+		       and hr.job_cd = #{search_job_cd} 
+		 </if> 
+		 <if test="(selectOP eq 'search_loginID'.toString()) or (selectOP.equals('search_loginID'))">
+	       	   and hr.loginID like concat('%',#{search_input} ,'%')
+	     </if>
+	     <if test="(selectOP eq 'search_name'.toString()) or (selectOP.equals('search_name'))">
+	           and ui.name like concat('%',#{search_input} ,'%')
+	     </if>
+	     <if test="(from_date != null) and (!from_date.equals(''))">
+	           and hr_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+	     </if>
+	     <if test="(to_date != null) and (!to_date.equals(''))">
+	           and hr_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+	     </if>
+	</select>
+	
+	<!-- 모달창 리스트 -->
+	<select id="empPromotionModalListlogin" resultType="kr.happyjob.study.employee.model.EmpPromotion">
+		select hr.loginID
+			  ,hr.dept_cd
+			  ,hr.job_cd
+			  ,ifnull(Date_format(hr.hr_date,"%Y-%m-%d"),'') as hr_date
+			  ,dp.dept_name
+			  ,dc.detail_name
+		  from tb_human_resources hr
+		  	   left outer join tb_dept dp on dp.dept_cd = hr.dept_cd
+           	   left outer join tb_detail_code dc on dc.detail_code = hr.job_cd
+     	 where dc.group_code = 'POScd' 	 
+     	   and hr.loginID = #{loginID} 
+     	 order by hr_no DESC
+	     limit #{pageIndex}, #{pageSize}
+	</select>
+	
+	<!-- 모달창 총 리스트  -->
+	<select id="totEmpPromotionModellogin" resultType="int">
+		select count(hr.hr_no)
+		  from tb_human_resources hr
+		  	   left outer join tb_dept dp on dp.dept_cd = hr.dept_cd
+           	   left outer join tb_detail_code dc on dc.detail_code = hr.job_cd
+           	   left outer join tb_userinfo ui on ui.loginID = hr.loginID
+     	 where dc.group_code = 'POScd' 	 
+     	   and hr.loginID = #{loginID} 
+	</select>
+	
+	<!-- 모달 사원 정보 -->
+	<select id="empManagementinfo" resultType="kr.happyjob.study.employee.model.EmpManagement">
+		select ui.loginID
+			  ,ui.name
+			  ,dp.dept_name
+			  ,detail_name
+		  from tb_userinfo ui
+		 	   left outer join tb_dept dp on dp.dept_cd = ui.dept_cd
+		 	   left outer join tb_detail_code dc on dc.detail_code = ui.job_cd
+	 	 where ui.loginID = #{loginID}
+	 	  and dc.group_code = 'POScd' 	 
+	</select>
+</mapper>

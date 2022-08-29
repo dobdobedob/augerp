@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happyjob.study.accounting.dao.AccountDao">
+
+	<!-- 그룹코드 목록 조회 -->
+	<select id="listAccountModel" resultType="kr.happyjob.study.accounting.model.AccountModel">
+		/*kr.happyjob.study.accounting.dao.AccountDao.listAccountModel*/
+		
+		    select ant.ant_no
+                 , DATE_FORMAT(ant.ant_date, '%Y-%m-%d') as ant_date
+			     , ant.loginID
+                 , ui.name as loginname
+                 , ant.ord_no
+                 , ant.inc_no
+                 , ant.cop_no
+                 , co.cop_nm
+                 , ant.ant_spd
+                 , ant.ant_inc
+                 , (ant.ant_inc - ant.ant_spd) as totamt
+                 , ll.acc_no
+                 , ll.dac_no 
+		    from tb_antsl ant
+		         inner join tb_userinfo ui on ui.loginID = ant.loginID
+                 inner join tb_company co on ant.cop_no = co.cop_no
+                 left outer join ( 
+                                select ep.exp_no
+                                     , ep.acc_no
+                              		 , ep.dac_no 
+                                  from tb_expend ep
+                                 union 
+                                 select o.ord_no as exp_no
+                                     , o.acc_no
+                              		 , o.dac_no 
+                                  from tb_order o		
+                        ) ll on ll.exp_no = ant.ord_no
+		   <where>
+		       <if test="(from_date != null) and (!from_date.equals(''))">
+		            and ant.ant_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(to_date != null) and (!to_date.equals(''))">
+		            and ant.ant_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(copcd != null) and (!copcd.equals(''))">
+		            and co.cop_no like concat('%',#{copcd} ,'%')
+		       </if>	
+		       <if test="(codenum != null) and (!codenum.equals(''))">
+		            and ll.acc_no like concat('%',#{codenum} ,'%')
+		       </if>
+		       <if test="(ptype != null) and (!ptype.equals(''))">
+		            and ll.dac_no  like concat('%',#{ptype} ,'%')
+		       </if>			    
+		   </where> 
+		  order by ant.ant_date 
+		   limit #{pageIndex}, #{pageSize}
+	</select>
+	
+    <select id="totAccountModel" resultType="int">
+		/*kr.happy.study.system.dao.AccountDao.totAccountModel*/
+		  select count(*)
+		    from tb_antsl ant
+		         inner join tb_userinfo ui on ui.loginID = ant.loginID
+                 inner join tb_company co on ant.cop_no = co.cop_no
+                 left outer join ( 
+                                select ep.exp_no
+                                     , ep.acc_no
+                              		 , ep.dac_no 
+                                  from tb_expend ep
+                                 union 
+                                 select o.ord_no as exp_no
+                                     , o.acc_no
+                              		 , o.dac_no 
+                                  from tb_order o		
+                        ) ll on ll.exp_no = ant.ord_no
+		   <where>
+		       <if test="(from_date != null) and (!from_date.equals(''))">
+		            and ant.ant_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(to_date != null) and (!to_date.equals(''))">
+		            and ant.ant_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(copcd != null) and (!copcd.equals(''))">
+		            and co.cop_no like concat('%',#{copcd} ,'%')
+		       </if>	
+		       <if test="(codenum != null) and (!codenum.equals(''))">
+		            and ll.acc_no like concat('%',#{codenum} ,'%')
+		       </if>
+		       <if test="(ptype != null) and (!ptype.equals(''))">
+		            and ll.dac_no  like concat('%',#{ptype} ,'%')
+		       </if>			    
+		   </where> 
+	</select>		
+	
+	<select id="selectaccount" resultType="kr.happyjob.study.accounting.model.AccountModel">
+			select ant.ant_no
+                 , ant.ant_spd
+                 , ant.ant_inc
+                 , (ant.ant_inc - ant.ant_spd) as totamt
+                 , ant.ant_date
+                 , ant.loginID
+                 , ui.name as loginname
+                 , cp.cop_nm
+                 , ordd.dac_no
+		    from tb_antsl ant
+		         left outer join tb_company cp on cp.loginID = ant.loginID
+		         inner join tb_userinfo ui on ui.loginID = ant.loginID
+		         left outer join tb_order ordd on ordd.ord_no = ant.ord_no
+		   where ant.ant_no = #{ant_no}     
+	</select>	
+	
+	
+	<select id="selectcopinfo" resultType="kr.happyjob.study.accounting.model.AccountModel">
+	      select co.cop_nm
+	            ,co.cop_ee
+	            ,ll.ant_spd
+	            ,ll.ant_inc
+	        from tb_company co
+	            , (
+			            select sum(ant.ant_spd) as ant_spd
+			                 , sum(ant.ant_inc) as ant_inc
+					    from tb_antsl ant
+					         inner join tb_userinfo ui on ui.loginID = ant.loginID
+			                 inner join tb_company co on ant.cop_no = co.cop_no
+			                 left outer join ( 
+			                                select ep.exp_no
+			                                     , ep.acc_no
+			                              		 , ep.dac_no 
+			                                  from tb_expend ep
+			                                 union 
+			                                 select o.ord_no as exp_no
+			                                     , o.acc_no
+			                              		 , o.dac_no 
+			                                  from tb_order o		
+			                        ) ll on ll.exp_no = ant.ord_no
+					   <where>
+					       <if test="(from_date != null) and (!from_date.equals(''))">
+					            and ant.ant_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+					       </if>
+					       <if test="(to_date != null) and (!to_date.equals(''))">
+					            and ant.ant_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+					       </if>
+					       <if test="(copcd != null) and (!copcd.equals(''))">
+					            and co.cop_no like concat('%',#{copcd} ,'%')
+					       </if>	
+					       <if test="(codenum != null) and (!codenum.equals(''))">
+					            and ll.acc_no like concat('%',#{codenum} ,'%')
+					       </if>
+					       <if test="(ptype != null) and (!ptype.equals(''))">
+					            and ll.dac_no  like concat('%',#{ptype} ,'%')
+					       </if>			    
+					   </where> 	
+	              ) ll
+	       where co.cop_no = ${copcd}
+	    
+	</select>
+	
+	
+</mapper>

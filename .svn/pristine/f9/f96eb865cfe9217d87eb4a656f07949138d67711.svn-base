@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.happyjob.study.sales.dao.ARMDao">
+ 
+	<!-- 그룹코드 목록 조회 -->
+	<select id="listARMModel" resultType="kr.happyjob.study.sales.model.ARMModel">
+		/*kr.happyjob.study.sales.dao.ARMDao.listARMModel*/
+		
+            SELECT odr.ord_no
+     			  ,odr.cop_no
+                  ,odr.ord_ar
+                  ,odr.supply_st
+                  ,DATE_FORMAT(inc.inc_date, '%Y-%m-%d') as inc_date 
+                  ,inc.inc_cost
+                  ,inc.inc_no
+                  ,inc.inc_st
+                  ,DATE_FORMAT(dtl.do_date, '%Y-%m-%d') as do_date 
+                  ,ant.ant_no
+                  ,cp.cop_nm
+                  ,ui.name
+                  ,dp.dept_name
+             FROM tb_order odr
+                  left outer join tb_income inc on inc.ord_no = odr.ord_no
+                  left outer join tb_company cp on cp.cop_no = odr.cop_no
+                  left outer join (
+                                    SELECT ord_no
+                                          ,MAX(do_date) AS do_date
+                                      FROM tb_dtlor
+                                     GROUP BY ord_no
+                                   ) dtl on dtl.ord_no = odr.ord_no
+                  left outer join tb_antsl ant on odr.ord_no = ant.ord_no
+                  left outer join tb_userinfo ui on ui.loginID = ant.loginID
+                  left outer join tb_dept dp on dp.dept_cd = ui.dept_cd
+		   <where>
+		       <if test="(from_date != null) and (!from_date.equals(''))">
+		            and dtl.do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(to_date != null) and (!to_date.equals(''))">
+		            and dtl.do_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(supply != null) and (!supply.equals(''))">
+		            and odr.supply_st like concat('%',#{supply} ,'%')
+		       </if>	
+		       <if test="(paydue != null) and (!paydue.equals(''))">
+		            and inc.inc_st like concat('%',#{paydue} ,'%')
+		       </if>
+		       <if test="(copcd != null) and (!copcd.equals(''))">
+		            and cp.cop_nm like concat('%',#{copcd} ,'%')
+		       </if>			    
+		   </where> 
+		  order by ord_no 
+		   limit #{pageIndex}, #{pageSize}
+	</select>
+	
+    <select id="totARMModel" resultType="int">
+		/*kr.happy.study.sales.dao.ARMDao.totARMModel*/
+		   select count(*)
+             FROM tb_order odr
+                  left outer join tb_income inc on inc.ord_no = odr.ord_no
+                  left outer join tb_company cp on cp.cop_no = odr.cop_no
+                  left outer join (
+                                    SELECT ord_no
+                                          ,MAX(do_date) AS do_date
+                                      FROM tb_dtlor
+                                     GROUP BY ord_no
+                                   ) dtl on dtl.ord_no = odr.ord_no
+                  left outer join tb_antsl ant on odr.ord_no = ant.ord_no
+                  left outer join tb_userinfo ui on ui.loginID = ant.loginID
+                  left outer join tb_dept dp on dp.dept_cd = ui.dept_cd
+		   <where>
+		       <if test="(from_date != null) and (!from_date.equals(''))">
+		            and dtl.do_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(to_date != null) and (!to_date.equals(''))">
+		            and dtl.do_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(supply != null) and (!supply.equals(''))">
+		            and odr.supply_st like concat('%',#{supply} ,'%')
+		       </if>	
+		       <if test="(paydue != null) and (!paydue.equals(''))">
+		            and inc.inc_st like concat('%',#{paydue} ,'%')
+		       </if>
+		       <if test="(copcd != null) and (!copcd.equals(''))">
+		            and cp.cop_nm like concat('%',#{copcd} ,'%')
+		       </if>			    
+		   </where> 
+	</select>		
+	
+	
+	<select id="selectarm" resultType="kr.happyjob.study.sales.model.ARMModel">
+		/*kr.happyjob.study.sales.dao.ARMDao.selectarm*/
+		select od.ord_no 
+			  ,od.ord_ar 
+			  ,od.supply_st 
+			  ,cp.cop_ee 
+			  ,cp.cop_nm 
+			  ,cp.cop_phn 
+			  ,cp.cop_bcd 
+			  ,cp.cop_ano 
+			  ,DATE_FORMAT(dl.do_date, '%Y-%m-%d') as do_date  
+			  ,DATE_FORMAT(dl.do_due, '%Y-%m-%d') as do_due  
+			  ,inc.inc_st 
+			  ,inc.inc_cost 
+			  ,est.est_tot 
+			  ,ant.ant_no 
+			  ,dp.dept_name  
+			  ,ui.name	  
+           from tb_order od
+			left outer join tb_company cp on cp.cop_no = od.cop_no
+			left outer join (
+			                                    SELECT ord_no
+			                                          ,MAX(do_date) AS do_date
+			                                          ,MAX(do_due) AS do_due
+			                                      FROM tb_dtlor 
+			                                     GROUP BY ord_no
+			                                   ) dl on dl.ord_no = od.ord_no
+			left outer join tb_income inc on inc.ord_no = od.ord_no
+			left outer join tb_estimate est on est.est_no = od.est_no
+			left outer join tb_antsl ant on ant.ord_no = od.ord_no
+			left outer join tb_userinfo ui on ui.loginID = ant.loginID
+			left outer join tb_dept dp on dp.dept_cd = ui.dept_cd
+		 where od.ord_no = #{ord_no}
+
+	</select>
+	
+	
+	    
+	
+	 <update id="incomeinsert">
+		 update tb_order
+		  set ord_ar = ord_ar - ${inc_cost}*0.5
+		  where ord_no = #{ord_no}
+	</update>
+	
+	
+	
+</mapper>

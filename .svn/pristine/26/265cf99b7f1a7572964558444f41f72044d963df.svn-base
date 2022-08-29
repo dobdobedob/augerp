@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.happyjob.study.business.dao.BizPartnerDao">
+
+	<!-- 거래처 추가 -->
+	<insert id="insertBizPartner" >
+		/*kr.happy.study.business.dao.BizPartnerDao.insertBizPartner*/
+		<selectKey resultType="int" keyProperty="cop_no" order="BEFORE">
+            select ifnull(max(cop_no),0) + 1 from tb_company
+        </selectKey>
+        insert into tb_company
+		      (
+		          cop_no
+		         ,loginID
+		         ,cop_nm
+		         ,cop_tel
+		         ,cop_ee
+		         ,cop_bm
+		         ,cop_phn
+		         ,cop_zip
+		         ,cop_addr
+		         ,cop_daddr
+		         ,cop_email
+		         ,cop_cno
+		         ,cop_anm
+		         ,cop_bcd
+		         ,cop_ano
+		         ,cop_memo
+		         ,cop_date
+		      ) values (
+		          #{cop_no}
+		         ,#{loginID}
+		         ,#{cop_nm}
+		         ,#{cop_tel}
+		         ,#{cop_ee}
+		         ,#{cop_bm}
+		         ,#{cop_phn}
+		         ,#{cop_zip}
+		         ,#{cop_addr}
+		         ,#{cop_daddr}
+		         ,#{cop_email}
+		         ,#{cop_cno}
+		         ,#{cop_anm}
+		         ,#{cop_bcd}
+		         ,#{cop_ano}
+		         ,#{cop_memo}
+		         ,now()
+		      )
+	</insert>
+	
+	<!-- 거래처 리스트 출력 -->
+	<select id="listBizPartnerModel" resultType="kr.happyjob.study.business.model.BizPartnerModel">
+		/*kr.happy.study.business.dao.BizPartnerDao.listBizPartnerModel*/
+		  select cop_no
+		       , cop_nm
+		       , cop_tel
+		       , cop_ee
+		       , cop_phn
+		       , cop_addr
+		       , cop_daddr
+		       , cop_email
+		       , cop_memo
+		       , DATE_FORMAT(cop_date, '%Y-%m-%d') as cop_date
+		 from tb_company
+		   <where>
+		       <if test="(copNM != null) and (!copNM.equals(''))">
+		            and cop_nm like concat('%',#{copNM} ,'%')
+		       </if>
+		       <if test="(copNO != null) and (!copNO.equals(''))">
+		            and cop_cno like concat('%',#{copNO} ,'%')
+		       </if>
+		       <if test="(from_date != null) and (!from_date.equals(''))">
+		            and cop_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(to_date != null) and (!to_date.equals(''))">
+		            and cop_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+		       </if>		    
+		   </where> 
+		  order by cop_no DESC
+		   limit #{pageIndex}, #{pageSize}
+	</select>
+	
+	<!-- 총 거래처 갯수  -->
+	 <select id="totBizPartnerModel" resultType="int">
+		/*kr.happy.study.business.dao.BizPartnerDao.totBizPartnerModel*/
+		  select count(*)
+		   from tb_company
+		   <where>
+		       <if test="(copNM != null) and (!copNM.equals(''))">
+		            and cop_nm like concat('%',#{copNM} ,'%')
+		       </if>
+		       <if test="(copNO != null) and (!copNO.equals(''))">
+		            and cop_cno like concat('%',#{copNO} ,'%')
+		       </if>
+		       <if test="(from_date != null) and (!from_date.equals(''))">
+		            and cop_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(to_date != null) and (!to_date.equals(''))">
+		            and cop_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+		       </if>		    
+		   </where> 
+	</select>
+	
+	<!-- 거래처 한개 선택  -->
+	<select id="selectBizPartner" resultType="kr.happyjob.study.business.model.BizPartnerModel">
+	      /*kr.happy.study.business.dao.BizPartnerDao.selectBizPartner*/
+           select cp.cop_no
+		       , cp.loginID
+		       , cp.cop_nm
+		       , cp.cop_tel
+		       , cp.cop_ee
+		       , cp.cop_bm
+		       , cp.cop_phn
+		       , cp.cop_zip
+		       , cp.cop_addr
+		       , cp.cop_daddr
+		       , cp.cop_email
+		       , cp.cop_cno
+		       , cp.cop_anm
+		       , cp.cop_bcd
+		       , cp.cop_ano
+		       , cp.cop_memo
+		       , DATE_FORMAT(cp.cop_date, '%Y-%m-%d') as cop_date
+		       , ui.name as loginNM
+		 from tb_company cp
+              left outer join tb_userinfo ui  on ui.loginID = cp.loginID
+	     where cp.cop_no = #{cop_no}
+	</select>
+	
+	<!-- 거래처 업데이트 -->
+	<update id="updateBizPartner">	
+		/*kr.happy.study.business.dao.BizPartnerDao.updateBizPartner*/	
+		 update tb_company
+	        set  cop_nm = #{cop_nm}
+		       , cop_tel = #{cop_tel}
+		       , cop_ee = #{cop_ee}
+		       , cop_bm = #{cop_bm}
+		       , cop_phn = #{cop_phn}
+		       , cop_zip = #{cop_zip}
+		       , cop_addr = #{cop_addr}
+		       , cop_daddr = #{cop_daddr}
+		       , cop_email = #{cop_email}
+		       , cop_cno = #{cop_cno}
+		       , cop_anm = #{cop_anm}
+		       , cop_bcd = #{cop_bcd}
+		       , cop_ano = #{cop_ano}
+		       , cop_memo = #{cop_memo}
+		  where cop_no = #{cop_no}
+	</update>
+	
+	
+</mapper>

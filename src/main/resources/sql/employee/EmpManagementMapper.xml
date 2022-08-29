@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.happyjob.study.employee.dao.EmpManagementDao">
+	
+	<!-- 부서 리스트 가져오기 -->
+	<select id="departmentList" resultType="kr.happyjob.study.employee.model.Department">
+		/*kr.happy.study.employee.dao.EmpManagementDao.departmentList*/
+		select dept_cd
+			  ,dept_name
+		  from tb_dept
+	</select>
+	
+	<!-- 사윈의 리스트 -->
+	<select id="listEmpManagementModel" resultType="kr.happyjob.study.employee.model.EmpManagement">
+		/*kr.happy.study.employee.dao.EmpManagementDao.listEmpManagementModel*/
+		select ui.loginID
+			  ,ui.name
+			  ,ui.dept_cd
+			  ,dp.dept_name
+			  ,dc.detail_name
+			  ,ui.user_date
+			  ,ui.user_du
+			  ,ifnull(Date_format(ui.user_redate,"%Y-%m-%d"),'') as user_redate
+		  from tb_userinfo ui
+		       left outer join tb_dept dp on dp.dept_cd = ui.dept_cd
+		       left outer join tb_detail_code dc on dc.detail_code = ui.job_cd
+	   	 where dc.group_code = 'POScd'
+	 	   <if test="(selectDepart != null) and (!selectDepart.equals(''))">
+		       and ui.dept_cd = #{selectDepart} 
+		   </if>
+		   <if test="(sampleconcode1 != null) and (!sampleconcode1.equals(''))">
+		       and ui.job_cd = #{sampleconcode1} 
+		   </if>
+		   <if test="(selectOP eq 'No'.toString()) or (sampleconcode1.equals('No'))">
+		       and ui.loginID = #{searchinfo} 
+		   </if>
+		   <if test="(selectOP eq 'Nm'.toString()) or (sampleconcode1.equals('Nm'))">
+		       and ui.name = #{searchinfo} 
+		   </if>
+		   <if test="(from_date != null) and (!from_date.equals(''))">
+	            and user_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+	       </if>
+	       <if test="(to_date != null) and (!to_date.equals(''))">
+	            and user_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+	       </if>
+	       <if test="(action eq 'Y'.toString()) and ((retireYN eq 'N'.toString()) or  (retireYN.equals('N')))">
+            	and  user_du = #{retireYN}
+	       </if>
+	       <if test="(action eq 'Y'.toString()) and ((retireYN eq 'Y'.toString()) or  (retireYN.equals('Y')))">
+	            and  user_du = #{retireYN}
+	       </if>
+	     order by ui.loginID DESC
+	     limit #{pageIndex}, #{pageSize}
+	</select>
+	
+	<!-- 사원리스트 총 명수 -->
+	<select id="totEmpManagementModel" resultType="int">
+		/*kr.happy.study.employee.dao.EmpManagementDao.totEmpManagementModel*/	
+		select count(*)
+		  from tb_userinfo
+		<where>
+		 	   <if test="(selectDepart != null) and (!selectDepart.equals(''))">
+			       and dept_cd = #{selectDepart} 
+			   </if>
+			   <if test="(sampleconcode1 != null) and (!sampleconcode1.equals(''))">
+			       and job_cd = #{sampleconcode1} 
+			   </if>
+			   <if test="(selectOP eq 'No'.toString()) or (sampleconcode1.equals('No'))">
+			       and loginID = #{searchinfo} 
+			   </if>
+			   <if test="(selectOP eq 'Nm'.toString()) or (sampleconcode1.equals('Nm'))">
+			       and name = #{searchinfo} 
+			   </if>
+			   <if test="(from_date != null) and (!from_date.equals(''))">
+		            and user_date <![CDATA[>=]]> STR_TO_DATE(#{from_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(to_date != null) and (!to_date.equals(''))">
+		            and user_date <![CDATA[<=]]> STR_TO_DATE(#{to_date}, '%Y-%m-%d')  
+		       </if>
+		       <if test="(action eq 'Y'.toString()) and ((retireYN eq 'N'.toString()) or  (retireYN.equals('N')))">
+	            	and  user_du = #{retireYN}
+		       </if>
+		       <if test="(action eq 'Y'.toString()) and ((retireYN eq 'Y'.toString()) or  (retireYN.equals('Y')))">
+		            and  user_du = #{retireYN}
+		       </if>		
+		  </where>
+	</select>
+	
+	<!-- 회원 퇴사전 이력정보 -->
+	<select id="selectUserRetire" resultType="kr.happyjob.study.employee.model.EmpManagement">
+		/*kr.happy.study.employee.dao.EmpManagementDao.selectUserRetire*/	
+		select loginID
+			  ,name
+			  ,Date_format(user_date,'%Y-%m-%d') as user_date
+			  ,Date_format(user_redate,'%Y-%m-%d') as user_redate
+			  ,user_du
+			  ,user_rere
+			  ,sal_bt
+		  from tb_userinfo
+		 where loginID = #{loginID}
+	</select>
+	
+	<!-- 회원 퇴사 적용 -->
+	<update id="saveUserRetire">
+		/*kr.happy.study.employee.dao.EmpManagementDao.saveUserRetire*/	
+		update tb_userinfo
+		   set user_redate = #{retire_date}
+		   	  ,user_rere = #{retire_r}
+		   	  ,user_du = 'N'
+		   	  ,user_reprice = case 
+						   		when TIMESTAMPDIFF(YEAR, #{hire_date},#{retire_date}) <![CDATA[>=]]> 1 then  TIMESTAMPDIFF(YEAR, #{hire_date},#{retire_date}) * #{sal_btre}
+						   		else 0
+						   		end 
+		 where loginID = #{loginId}
+	</update>
+	
+	<!-- 회원 저장 -->
+	<insert id="insertEmpManagement">
+		insert into tb_userinfo
+			(
+	            loginID
+	           ,user_type
+               ,name
+               ,password
+               ,tel
+               ,user_con
+               ,sex
+               ,mail
+               ,birth
+               ,zip_code
+               ,degree
+               ,addr
+               ,addr_detail
+               ,bank
+               ,account
+               ,dept_cd
+               ,job_cd
+               ,user_date
+               ,user_du
+               ,sal_ad
+               ,sal_bt
+               ,sal_price
+               ,sal_kuk
+               ,sal_kun
+               ,sal_ko
+               ,sal_san
+               ,user_idate
+	        ) values (
+	        	#{loginID}
+	           ,#{user_type}
+               ,#{name}
+               ,'0000'
+               ,#{tel}
+               ,#{user_con}
+               ,#{gender}
+               ,#{mail}
+               ,#{birth}
+               ,#{zip_code}
+               ,#{degree}
+               ,#{addr}
+               ,#{addr_detail}
+               ,#{bank}
+               ,#{account}
+               ,#{dept_cd}
+               ,#{job_cd}
+               ,#{user_date}
+               ,#{user_du}
+               ,#{sal_ad}
+               ,#{sal_bt}
+               ,#{sal_price}
+               ,#{sal_kuk}
+               ,#{sal_kun}
+               ,#{sal_ko}
+               ,#{sal_san}
+               ,now()
+	        )
+	</insert>
+	
+	<!-- 회원 사진 저장 -->
+	<insert id="insertEmpManagementfile">
+		<selectKey resultType="int" keyProperty="att_no" order="BEFORE">
+            select ifnull(max(att_no),0) + 1 from tb_attachment 
+        </selectKey>
+         insert into tb_attachment
+	        (
+	            att_no
+	           ,ref_list_no
+               ,ref_seq_no
+               ,att_ori
+               ,att_date
+               ,att_sta
+               ,att_nli
+               ,att_mul
+               ,att_size
+	        ) values (
+	           #{att_no}
+	          ,99
+	          , #{loginID}
+	          ,#{fileinf.file_nm}
+	          ,now()
+	          ,'N'
+	          ,#{fileinf.loc_file_loc}
+	          ,#{fileinf.file_loc}
+	          ,#{fileinf.file_size}
+	        )
+	</insert>
+	
+	<!-- 회원 아이디 순서 -->
+	<select id="selectempManagementID" resultType="string">
+		select  CONCAT( DATE_FORMAT(now(),'%Y'), ifnull(right(max(loginID),3),'000'))+1 as loginID
+		  from tb_userinfo
+		 where left(loginID,4) = DATE_FORMAT(now(),'%Y')
+	</select>
+	
+	<!-- 사원하나 가져오기  -->
+	<select id="selectempManagementInfo" resultType="kr.happyjob.study.employee.model.EmpManagement">
+		select loginID
+		      , name
+		      , user_con
+		      , sex
+		      , Date_format(birth,'%Y-%m-%d') as birth
+		      , degree
+		      , mail
+		      , tel
+		      , zip_code
+		      , addr
+		      , addr_detail
+		      , bank
+		      , account
+		      , dept_cd
+		      , job_cd
+		      , user_type
+		      , user_du
+		      , Date_format(user_date,'%Y-%m-%d') as user_date
+		      , Date_format(ui.user_redate,'%Y-%m-%d') as user_redate
+		      , case
+		        when user_du = 'Y' then ifnull(TIMESTAMPDIFF(YEAR, user_date ,now()),0)
+		        when user_du = 'B' then ifnull(TIMESTAMPDIFF(YEAR, user_date ,now()),0)
+		        when user_du = 'N' then ifnull(TIMESTAMPDIFF(YEAR, user_date ,user_redate),0)
+		        end as workDue
+		      , sal_ad 
+		      , ifnull(ui.user_reprice,0) as user_reprice
+		      , at.att_nli
+		      , at.att_mul
+		      , at.att_ori
+		  from tb_userinfo ui
+		       left outer join tb_attachment at on ui.loginID = at.ref_seq_no
+	     where loginID = #{loginID}
+	</select>
+	
+	<!-- 회원 등록시 휴가 인서트 -->
+	<insert id="insertDtlVacation">
+		<selectKey resultType="int" keyProperty="dva_no" order="BEFORE">
+            select ifnull(max(dva_no),0) + 1 from tb_dtlvacation 
+        </selectKey>
+		insert into tb_dtlvacation
+		   (
+	            dva_no
+	           ,loginID
+               ,dva_tot
+               ,dva_rest
+               ,dva_date
+	        ) values (
+	            #{dva_no}
+	           ,#{loginID}
+			   ,case 
+			   		when TIMESTAMPDIFF(YEAR, #{user_date},now()) <![CDATA[>=]]> 1 then 15
+			   		when TIMESTAMPDIFF(YEAR, #{user_date},now()) <![CDATA[>=]]> 3 then 16
+			   		else 11
+		   		end
+		   		,case 
+		   		when TIMESTAMPDIFF(YEAR, #{user_date},now()) <![CDATA[>=]]> 1 then 15
+		   		when TIMESTAMPDIFF(YEAR, #{user_date},now()) <![CDATA[>=]]> 3 then 16
+		   			else 11
+		   		end
+		   		,now()
+	        )
+	</insert>
+	
+	<!-- 사원등록시 급여테이블에 입력 -->
+	<insert id="insertSalaryTable">
+		<selectKey resultType="int" keyProperty="sal_no" order="BEFORE">
+            select ifnull(max(sal_no),0) + 1 from tb_salary 
+        </selectKey>
+		insert into tb_salary  
+			(
+	            sal_no
+	           ,loginID
+               ,sal_price
+               ,sal_date
+               ,sal_ad
+               ,sal_bt
+               ,sal_kuk
+               ,sal_kun
+               ,sal_ko
+               ,sal_san
+	        ) values (
+	        	#{sal_no}
+	           ,#{loginID}
+	           ,#{sal_price}
+	           ,now()
+	           ,#{sal_ad}
+	           ,#{sal_bt}
+	           ,#{sal_kuk}
+	           ,#{sal_kun}
+	           ,#{sal_ko}
+	           ,#{sal_san}
+	        )
+	</insert>
+	
+	<!-- 인사이력 정보 테이블에 정보 넣기 -->
+	<insert id="insertHumanHistory">
+		<selectKey resultType="int" keyProperty="hr_no" order="BEFORE">
+            select ifnull(max(hr_no),0) + 1 from tb_human_resources 
+        </selectKey>
+		insert into tb_human_resources
+			(
+	            hr_no
+	           ,loginID
+               ,dept_cd
+               ,job_cd
+               ,hr_date
+	        ) values (
+	        	#{hr_no}
+	           ,#{loginID}
+	           ,#{dept_cd}
+	           ,#{job_cd}
+	           ,now()
+	        )
+	</insert>
+	
+	<!-- 첨부파일 삭제 -->
+	<delete id="empManagementFileDelete">
+		delete from tb_attachment
+		where ref_seq_no = #{loginID}
+	</delete>
+	
+	<!-- 사원 업데이트 -->
+	<update id="updateEmpManagementfile">
+		update tb_userinfo
+			 set  
+		           user_type = #{user_type}
+	               ,name = #{name}
+	               ,tel = #{tel}
+	               ,user_con = #{user_con}
+	               ,sex = #{gender}
+	               ,mail = #{mail}
+	               ,birth = #{birth}
+	               ,zip_code = #{zip_code}
+	               ,degree = #{degree}
+	               ,addr = #{addr}
+	               ,addr_detail = #{addr_detail}
+	               ,bank = #{bank}
+	               ,account = #{account}
+	               ,dept_cd = #{dept_cd}
+	               ,job_cd = #{job_cd}
+	               ,user_date = #{user_date}
+	               ,user_du = #{user_du}
+	               ,sal_ad = #{sal_ad}
+	               ,sal_bt = #{sal_bt}
+	               ,sal_price = #{sal_price}
+	               ,sal_kuk = #{sal_kuk}
+	               ,sal_kun = #{sal_kun}
+	               ,sal_ko = #{sal_ko}
+	               ,sal_san = #{sal_san}
+         where loginID = #{loginID}
+	</update>
+</mapper>
